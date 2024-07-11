@@ -28,7 +28,7 @@ function Navbar() {
     <div>
       {/* Navbar superior */}
       <div
-        className={`relative top-0 flex justify-between sm:hidden ${
+        className={`relative top-0 flex justify-between  ${
           /\/home/.test(isActive) ||
           /\/search/.test(isActive) ||
           /\/notifications/.test(isActive) ||
@@ -38,7 +38,11 @@ function Navbar() {
         } flex-col`}
       >
         {/* Parte superior de navbar */}
-        <div className="flex w-screen text-xl justify-between h-12 pt-2 pl-3">
+        <div
+          className={` flex w-full text-xl justify-between h-12 pt-2 pl-3 ${
+            /\/home/.test(isActive) ? "sm:hidden" : ""
+          }`}
+        >
           {/* Arrow Back */}
           <Link href="/home" className=" text-black">
             <FontAwesomeIcon
@@ -56,7 +60,7 @@ function Navbar() {
               /\/comunity/.test(isActive) || /\/bookmarks/.test(isActive)
                 ? "hidden"
                 : ""
-            } h-8 w-8 mt-1 ml-2 `}
+            } h-8 w-8 mt-1 ml-2 sm:hidden`}
           />
           {/* Home */}
           <div
@@ -125,11 +129,11 @@ function Navbar() {
             <div>
               <FontAwesomeIcon
                 icon={faSearch}
-                className=" h-6 mt-2 mr-2"
+                className=" h-6 mt-2 mr-2 "
               ></FontAwesomeIcon>
               <FontAwesomeIcon
                 icon={faUserGroup}
-                className=" h-6 mt-2 mr-2"
+                className=" h-6 mt-2"
               ></FontAwesomeIcon>
             </div>
           </div>
@@ -143,11 +147,12 @@ function Navbar() {
             <h3 className="text-sm -mt-1 w-3/4 ml-4">@user</h3>
           </div>
         </div>
+        {/* Parte inferior de la navbar */}
         {/* Home */}
         <div
           className={`${
             /\/home/.test(isActive) ? "" : "hidden"
-          } flex w-screen text-base font-bold justify-between h-12 `}
+          } flex w-full text-base font-bold justify-between h-12 `}
         >
           <Link
             href="/home/para_ti"
@@ -174,11 +179,11 @@ function Navbar() {
         <div
           className={`${
             /\/search/.test(isActive) ? "" : "hidden"
-          } flex w-screen  text-base font-bold justify-between h-12 flex-nowrap overflow-x-auto stroke-none mt-2`}
+          } flex w-full  text-base font-bold justify-between h-12 flex-nowrap overflow-x-auto stroke-none mt-2`}
         >
           <Link
             href="/search/para_ti"
-            className={`min-w-32 h-full justify-center ${
+            className={`min-w-32 w-1/5 h-full justify-center ${
               isActive == "/search/para_ti"
                 ? "bg-gray-200 border-b border-blue-500"
                 : ""
@@ -188,7 +193,7 @@ function Navbar() {
           </Link>
           <Link
             href="/search/tendencias"
-            className={`min-w-32 h-full justify-center ${
+            className={`min-w-32 h-full w-1/5 justify-center ${
               isActive == "/search/tendencias"
                 ? "bg-gray-200 border-b border-blue-500"
                 : ""
@@ -198,7 +203,7 @@ function Navbar() {
           </Link>
           <Link
             href="/search/noticias"
-            className={`min-w-32 h-full justify-center ${
+            className={`min-w-32 h-full w-1/5 justify-center ${
               isActive == "/search/noticias"
                 ? "bg-gray-200 border-b border-blue-500"
                 : ""
@@ -208,7 +213,7 @@ function Navbar() {
           </Link>
           <Link
             href="/search/deportes"
-            className={`min-w-32 h-full justify-center ${
+            className={`min-w-32 h-full w-1/5 justify-center ${
               isActive == "/search/deportes"
                 ? "bg-gray-200 border-b border-blue-500"
                 : ""
@@ -218,7 +223,7 @@ function Navbar() {
           </Link>
           <Link
             href="/search/entretenimiento"
-            className={`min-w-32 h-full justify-center ${
+            className={`min-w-32 h-full w-1/5 justify-center ${
               isActive == "/search/entretenimiento"
                 ? "bg-gray-200 border-b border-blue-500"
                 : ""
@@ -231,7 +236,7 @@ function Navbar() {
         <div
           className={`${
             /\/notifications/.test(isActive) ? "" : "hidden"
-          } flex w-screen  text-base font-bold justify-between h-12 flex-nowrap overflow-x-auto stroke-none mt-2`}
+          } flex w-full  text-base font-bold justify-between h-12 flex-nowrap overflow-x-auto stroke-none mt-2`}
         >
           <Link
             href="/notifications/todas"
