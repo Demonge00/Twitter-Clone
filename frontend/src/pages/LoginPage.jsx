@@ -3,14 +3,40 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Input } from "@nextui-org/input";
 import { Button, Link } from "@nextui-org/react";
 import { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { Login } from "../api/api";
+import { useUserDetails } from "../contents/UserContext";
+import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
-  const [user, setUser] = useState("");
+  const navigate = useNavigate();
+  const { userInfo, updateUserInfo } = useUserDetails();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const buttonEnabled = Boolean(user && password);
+  const buttonEnabled = Boolean(email && password);
+
+  const { mutate: login, isLoading } = useMutation({
+    mutationFn: (data) => Login(data),
+    onError: (error) => {
+      console.log(error);
+    },
+    onSuccess: (response) => {
+      updateUserInfo(response.data.access, response.data.refresh);
+    },
+  });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    login({
+      email: email,
+      password: password,
+    });
+  };
+
   useEffect(() => {
-    console.log(buttonEnabled);
-  }, [buttonEnabled]);
+    if (userInfo.accessToken) {
+      navigate("/");
+    }
+  }, [navigate, userInfo.accessToken]);
   return (
     <div
       className={" w-screen h-screen flex flex-col justify-center items-center"}
@@ -25,7 +51,7 @@ function LoginPage() {
             labelPlacement="outside"
             placeholder="Inserta tu Email o Usuario"
             color="primary"
-            onChange={(e) => setUser(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <Input
             className="mb-2 ml-1 w-11/12 mx-auto"
@@ -43,6 +69,8 @@ function LoginPage() {
             size="sm"
             className="block mx-auto mt-3 mb-2"
             isDisabled={!buttonEnabled}
+            isLoading={isLoading}
+            onClick={handleSubmit}
           >
             Logueate
           </Button>

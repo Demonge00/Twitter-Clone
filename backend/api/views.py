@@ -35,6 +35,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         token['name'] = user.name
+        token['name_id'] = user.name_id
         return token
 
 
@@ -136,14 +137,14 @@ class PasswordRecoverList(APIView):
             user = User.objects.get(email=request.data['email'])
             user.password_secret = password_secret
             user.save()
-            print(f"Porfavor ve a <a href='http://localhost:8000/feather/password/{
+            print(f"Porfavor ve a <a href='http://localhost:5173/recover-password/{
                   password_secret}'>este link</a> para vambiar tu contraseña.")
-            return Response(status=status.HTTP_200_OK)
+            return Response({'message': 'Password recuperado'}, status=status.HTTP_200_OK)
         except:
             return Response({'message': 'Email no existe'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['POST'])
+@api_view(['PUT'])
 def UpdatePassword(request, password_secret):
     try:
         user = User.objects.get(password_secret=password_secret)
