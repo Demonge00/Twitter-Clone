@@ -12,17 +12,22 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@nextui-org/link";
 import { Avatar } from "@nextui-org/avatar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
+import { useUserDetails } from "./UserContext";
 
 function NavbarLateral() {
+  const navigate = useNavigate();
+  const { userInfo, updateUserInfo } = useUserDetails();
   const [isActive, setIsActive] = useState("/home");
   const location = useLocation();
   useEffect(() => {
+    if (userInfo.accessToken == false) {
+      navigate("/login");
+    }
     setIsActive(location.pathname);
-    console.log(location.pathname);
-  }, [location]);
+  }, [location, navigate, userInfo.accessToken]);
   return (
     <nav className="hidden sm:flex flex-col h-screen relative right-0 top-0 border-r pr-6 pt-6 items-end">
       {/* Lista de iconos */}
@@ -227,7 +232,13 @@ function NavbarLateral() {
         </PopoverTrigger>
         <PopoverContent>
           <div className="px-1 py-2 w-48">
-            <Link href="/login" color="danger">
+            <Link
+              href="/login"
+              color="danger"
+              onClick={() => {
+                updateUserInfo(false, false);
+              }}
+            >
               Cerrar la sección del usuario
             </Link>
           </div>

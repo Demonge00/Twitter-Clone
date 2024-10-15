@@ -4,8 +4,10 @@ import { Link } from "@nextui-org/link";
 import { Avatar } from "@nextui-org/avatar";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import Display from "../contents/NavList";
 
 function Notifications() {
+  const [navList, setNavList] = useState(false);
   const [isActive, setIsActive] = useState("/home");
   const location = useLocation();
   useEffect(() => {
@@ -20,6 +22,9 @@ function Notifications() {
           src=""
           className={`
           } h-8 w-8 mt-1 ml-2 sm:hidden`}
+          onClick={() => {
+            setNavList(true);
+          }}
         />
         {/* Notifications */}
         <div
@@ -28,12 +33,18 @@ function Notifications() {
           } flex ml-4 mr-auto w-5/6 justify-between`}
         >
           <p className="text-lg font-bold mt-1.5  w-3/4">Notificaciones</p>
-          <FontAwesomeIcon
-            icon={faGear}
-            className=" h-6 mt-2 mr-2"
-          ></FontAwesomeIcon>
+          <Link className=" text-black " href="/settings">
+            <FontAwesomeIcon
+              icon={faGear}
+              className=" h-6 mr-4"
+            ></FontAwesomeIcon>
+          </Link>
         </div>
       </div>
+
+      {/*Mostrar navbar list */}
+      {navList ? <Display clicker={() => setNavList(false)} /> : null}
+
       {/* Parte inferior */}
       {/* Notifications */}
       <div

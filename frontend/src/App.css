@@ -14,3 +14,17 @@
   color: inherit;
   background-color: transparent;
 }
+
+.moveIn {
+  animation: moveIn 0.5s ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+@keyframes moveIn {
+  0% {
+    transform: "translateX(0%)";
+  }
+  100% {
+    transform: "translateX(100%)";
+  }
+}

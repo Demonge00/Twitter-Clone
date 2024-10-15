@@ -10,7 +10,7 @@ import Comunity from "./Comunity";
 
 function WorkPage() {
   return (
-    <div className="w-screen h-screen grid grid-cols-1 sm:grid-cols-[15%_85%] lg:grid-cols-[25%_50%_25%] max-w-[1420px] mx-auto">
+    <div className="w-screen h-screen grid grid-cols-1 sm:grid-cols-[15%_85%] lg:grid-cols-[30%_30%_20%_20%] mx-auto">
       <div className=" hidden sm:block w-full h-full max-w-full">
         <NavbarLateral />
       </div>

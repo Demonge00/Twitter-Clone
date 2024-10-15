@@ -8,7 +8,11 @@ import { Link } from "@nextui-org/link";
 import { Avatar } from "@nextui-org/avatar";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+
+import Display from "../contents/NavList";
+
 function Search() {
+  const [navList, setNavList] = useState(false);
   const [isActive, setIsActive] = useState("/home");
 
   const [searchText, setSearchText] = useState("");
@@ -20,12 +24,18 @@ function Search() {
   }, [location]);
   return (
     <div className={`relative top-0 flex justify-between flex-col border-b`}>
+      {/*Mostrar navbar list*/}
+      {navList ? <Display clicker={() => setNavList(false)} /> : null}
+
       {/* Parte superior */}
       <div className={` flex w-full text-xl justify-between h-12 pt-2 pl-3`}>
         <Avatar
           src=""
           className={`
             } h-8 w-8 mt-1 ml-2 sm:hidden`}
+          onClick={() => {
+            setNavList(true);
+          }}
         />
         {/* Arrow Back */}
         <FontAwesomeIcon
@@ -56,11 +66,12 @@ function Search() {
               className={`custom-input h-full w-3/4`}
             />
           </div>
-
-          <FontAwesomeIcon
-            icon={faGear}
-            className=" h-6 mt-2 mr-4"
-          ></FontAwesomeIcon>
+          <Link className=" text-black " href="/settings">
+            <FontAwesomeIcon
+              icon={faGear}
+              className=" h-6 mr-4"
+            ></FontAwesomeIcon>
+          </Link>
         </div>
       </div>
       {/* Parte inferior */}

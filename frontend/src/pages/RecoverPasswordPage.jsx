@@ -5,8 +5,12 @@ import { Button, Link } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { ChangePassword } from "../api/api";
 import { useMutation } from "@tanstack/react-query";
+import { useUserDetails } from "../contents/UserContext";
+import { useNavigate } from "react-router-dom";
 
 function RecoverPasswordPage() {
+  const navigate = useNavigate();
+  const { userInfo } = useUserDetails();
   const [user, setUser] = useState("");
   const buttonEnabled = Boolean(user);
   const {
@@ -27,8 +31,10 @@ function RecoverPasswordPage() {
     });
   };
   useEffect(() => {
-    console.log(buttonEnabled);
-  }, [buttonEnabled]);
+    if (userInfo.accessToken) {
+      navigate("/home");
+    }
+  }, [navigate, userInfo.accessToken]);
   return (
     <div
       className={" w-screen h-screen flex flex-col justify-center items-center"}

@@ -6,19 +6,25 @@ import { useEffect, useState } from "react";
 import { checkEmailComplex, checkPasswordComplexity } from "../utils";
 import { useMutation } from "@tanstack/react-query";
 import { RegisterUser } from "../api/api";
+import { useUserDetails } from "../contents/UserContext";
+import { useNavigate } from "react-router-dom";
 
 function RegisterPage() {
-  const [userInfo, setUserInfo] = useState({
+  const navigate = useNavigate();
+  const { userInfo } = useUserDetails();
+  const [userInformation, setUserInformation] = useState({
     user: "",
     email: "",
     password: "",
     verifiedPassword: "",
   });
   const buttonEnabled =
-    userInfo.user &&
-    checkEmailComplex(userInfo.email) &&
-    checkPasswordComplexity(userInfo.password, userInfo.verifiedPassword)
-      .length == 0;
+    userInformation.user &&
+    checkEmailComplex(userInformation.email) &&
+    checkPasswordComplexity(
+      userInformation.password,
+      userInformation.verifiedPassword
+    ).length == 0;
 
   const {
     mutate: registrarse,
@@ -32,18 +38,18 @@ function RegisterPage() {
     e.preventDefault();
     console.log("test");
     registrarse({
-      name: userInfo.user,
-      email: userInfo.email,
-      password: userInfo.password,
+      name: userInformation.user,
+      email: userInformation.email,
+      password: userInformation.password,
     }).then((response) => {
       console.log(response.html);
     });
   };
   useEffect(() => {
-    console.log(isError);
-    console.log(isLoading);
-    console.log(isSuccess);
-  }, [isError, isLoading, isSuccess]);
+    if (userInfo.accessToken) {
+      navigate("/home");
+    }
+  }, [navigate, userInfo.accessToken]);
   return (
     <div
       className={
@@ -78,7 +84,10 @@ function RegisterPage() {
                 placeholder="Inserta tu nombre de Usuario"
                 color="primary"
                 onChange={(e) =>
-                  setUserInfo({ ...userInfo, user: e.target.value })
+                  setUserInformation({
+                    ...userInformation,
+                    user: e.target.value,
+                  })
                 }
               />
               <Input
@@ -88,13 +97,17 @@ function RegisterPage() {
                 labelPlacement="outside"
                 placeholder="Inserta tu Email"
                 isInvalid={
-                  !checkEmailComplex(userInfo.email) && userInfo.email != ""
+                  !checkEmailComplex(userInformation.email) &&
+                  userInformation.email != ""
                 }
                 errorMessage="Entre una dirección válida de email"
                 classNames={{ mainWrapper: "mt-4" }}
                 color="primary"
                 onChange={(e) =>
-                  setUserInfo({ ...userInfo, email: e.target.value })
+                  setUserInformation({
+                    ...userInformation,
+                    email: e.target.value,
+                  })
                 }
               />
               <Input
@@ -105,14 +118,17 @@ function RegisterPage() {
                 placeholder="Inserta tu Contraseña"
                 isInvalid={
                   checkPasswordComplexity(
-                    userInfo.password,
-                    userInfo.verifiedPassword
-                  ).length != 0 && userInfo.password.length != 0
+                    userInformation.password,
+                    userInformation.verifiedPassword
+                  ).length != 0 && userInformation.password.length != 0
                 }
                 color="primary"
                 classNames={{ mainWrapper: "mt-4" }}
                 onChange={(e) =>
-                  setUserInfo({ ...userInfo, password: e.target.value })
+                  setUserInformation({
+                    ...userInformation,
+                    password: e.target.value,
+                  })
                 }
               />
               <Input
@@ -123,24 +139,27 @@ function RegisterPage() {
                 placeholder="Verifica tu contraseña"
                 isInvalid={
                   checkPasswordComplexity(
-                    userInfo.password,
-                    userInfo.verifiedPassword
-                  ).length != 0 && userInfo.verifiedPassword.length != 0
+                    userInformation.password,
+                    userInformation.verifiedPassword
+                  ).length != 0 && userInformation.verifiedPassword.length != 0
                 }
                 classNames={{ mainWrapper: "mt-4" }}
                 color="primary"
                 onChange={(e) =>
-                  setUserInfo({ ...userInfo, verifiedPassword: e.target.value })
+                  setUserInformation({
+                    ...userInformation,
+                    verifiedPassword: e.target.value,
+                  })
                 }
               />
               <ul className=" text-xs ml-5 text-red-500">
                 {checkPasswordComplexity(
-                  userInfo.password,
-                  userInfo.verifiedPassword
-                ).length != 0 && userInfo.password.length != 0
+                  userInformation.password,
+                  userInformation.verifiedPassword
+                ).length != 0 && userInformation.password.length != 0
                   ? checkPasswordComplexity(
-                      userInfo.password,
-                      userInfo.verifiedPassword
+                      userInformation.password,
+                      userInformation.verifiedPassword
                     ).map((e) => {
                       return <li key={e}>{e}</li>;
                     })

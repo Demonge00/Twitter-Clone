@@ -10,7 +10,17 @@ export default {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        moveIn: {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
+      },
+    },
+    animation: {
+      moveIn: "moveIn 0.5s ease-in-out",
+    },
   },
   darkMode: "class",
   plugins: [nextui()],

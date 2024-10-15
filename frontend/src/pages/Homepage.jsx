@@ -2,10 +2,12 @@ import { faFeather } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@nextui-org/link";
 import { Avatar } from "@nextui-org/avatar";
+import Display from "../contents/NavList";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 function Homepage() {
+  const [navList, setNavList] = useState(false);
   const [isActive, setIsActive] = useState("/home");
   const location = useLocation();
   useEffect(() => {
@@ -15,14 +17,21 @@ function Homepage() {
   return (
     <div className={`relative top-0 flex justify-between flex-col border-b`}>
       {/* Parte superior */}
+
       <div
         className={` flex w-full text-xl justify-between h-12 pt-2 pl-3 sm:hidden`}
       >
         <Avatar
           src=""
           className={`
-        } h-8 w-8 mt-1 ml-2 `}
+      } h-8 w-8 mt-1 ml-2 sm:hidden`}
+          onClick={() => {
+            setNavList(true);
+          }}
         />
+
+        {/*Mostrar navbar list*/}
+        {navList ? <Display clicker={() => setNavList(false)} /> : null}
 
         <div className={`flex justify-start m-auto text-blue-500`}>
           <FontAwesomeIcon

@@ -15,7 +15,11 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const buttonEnabled = Boolean(email && password);
 
-  const { mutate: login, isLoading } = useMutation({
+  const {
+    mutate: login,
+    isLoading,
+    isError,
+  } = useMutation({
     mutationFn: (data) => Login(data),
     onError: (error) => {
       console.log(error);
@@ -34,7 +38,7 @@ function LoginPage() {
 
   useEffect(() => {
     if (userInfo.accessToken) {
-      navigate("/");
+      navigate("/home");
     }
   }, [navigate, userInfo.accessToken]);
   return (
@@ -42,7 +46,16 @@ function LoginPage() {
       className={" w-screen h-screen flex flex-col justify-center items-center"}
     >
       <form className=" min-w-[280px] sm:min-w-[382px] w-1/2 lg:w-1/3 min-h-60 border rounded flex flex-col gap-2 bg-gray-50 ">
-        <FontAwesomeIcon icon={faFeather} className="text-blue-500 h-8 mt-2" />
+        {isError ? (
+          <h1 className="text-center text-blue-500 gap-2 pt-4 ">
+            Ha ocurrido un error. Intentelo de nuevo
+          </h1>
+        ) : (
+          <FontAwesomeIcon
+            icon={faFeather}
+            className="text-blue-500 h-8 mt-2"
+          />
+        )}
         <div>
           <Input
             className="mb-2 ml-1 w-11/12 mx-auto"

@@ -7,8 +7,10 @@ import { checkPasswordComplexity } from "../utils";
 import { useMutation } from "@tanstack/react-query";
 import { ChangePasswordResult } from "../api/api";
 import { useNavigate, useParams } from "react-router-dom";
+import { useUserDetails } from "../contents/UserContext";
 
 function NewPasswordPage() {
+  const { userInfo } = useUserDetails();
   const navigate = useNavigate();
   const params = useParams();
   const [password, setPassword] = useState("");
@@ -35,12 +37,15 @@ function NewPasswordPage() {
     });
   };
   useEffect(() => {
+    if (userInfo.accessToken) {
+      navigate("/home");
+    }
     if (isSuccess) {
       setTimeout(() => {
         navigate("/login");
       }, 2000);
     }
-  }, [isSuccess, navigate]);
+  }, [isSuccess, navigate, userInfo.accessToken]);
   return (
     <div
       className={

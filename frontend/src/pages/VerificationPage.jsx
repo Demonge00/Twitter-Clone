@@ -2,14 +2,19 @@ import { useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { ValidateUser } from "../api/api";
 import { useNavigate, useParams } from "react-router-dom";
+import { useUserDetails } from "../contents/UserContext";
 
 function VerificationPage() {
+  const { userInfor } = useUserDetails();
   const navigate = useNavigate();
   const params = useParams();
   const { mutate: registrarse, isSuccess } = useMutation({
     mutationFn: (data) => ValidateUser(data),
   });
   useEffect(() => {
+    if (userInfor.accessToken) {
+      navigate("/home");
+    }
     if (isSuccess) {
       setTimeout(() => {
         navigate("/login");
@@ -19,7 +24,13 @@ function VerificationPage() {
         url: params.userSecret,
       });
     }
-  }, [isSuccess, navigate, params.userSecret, registrarse]);
+  }, [
+    isSuccess,
+    navigate,
+    params.userSecret,
+    registrarse,
+    userInfor.accessToken,
+  ]);
   return (
     <div
       className={

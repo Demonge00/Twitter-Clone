@@ -6,8 +6,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "@nextui-org/avatar";
 import { useState } from "react";
+import { Link } from "@nextui-org/link";
+import Display from "../contents/NavList";
 
 function Messages() {
+  const [navList, setNavList] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
@@ -18,15 +21,24 @@ function Messages() {
         <Avatar
           src=""
           className={`
-              } h-8 w-8 mt-1 ml-2 sm:hidden`}
+      } h-8 w-8 mt-1 ml-2 sm:hidden`}
+          onClick={() => {
+            setNavList(true);
+          }}
         />
+
+        {/*Mostrar navbar list */}
+        {navList ? <Display clicker={() => setNavList(false)} /> : null}
+
         {/* Mensajes directos */}
         <div className={`flex ml-4 mr-auto w-5/6 justify-between`}>
           <p className="text-lg font-bold mt-1.5  w-5/6">Mensajes</p>
-          <FontAwesomeIcon
-            icon={faGear}
-            className=" h-6 mt-2 mr-2"
-          ></FontAwesomeIcon>
+          <Link className=" text-black " href="/settings">
+            <FontAwesomeIcon
+              icon={faGear}
+              className=" h-6 mr-4"
+            ></FontAwesomeIcon>
+          </Link>
         </div>
       </div>
       {/* Parte inferior */}
