@@ -12,13 +12,14 @@ import { Link } from "@nextui-org/link";
 // eslint-disable-next-line react/prop-types
 function Display({ clicker }) {
   const { userInfo, updateUserInfo } = useUserDetails();
+
   return (
     <div>
       <div
         className=" h-screen w-screen absolute top-0 left-0 z-30 bg-black opacity-40"
         onClick={clicker}
       ></div>
-      <div className=" h-screen w-[80vw] absolute bg-white z-50 top-0 left-[-80vw] moveIn overflow-y-auto overflow-x-hidden">
+      <div className=" h-screen w-[80vw] absolute bg-white z-50 top-0 left-[-80vw] animate-moveIn animate-fill-forwards overflow-y-auto overflow-x-hidden scrollbar-hide">
         <div className=" flex justify-between mt-4 ml-4 mr-4">
           <Avatar
             src=""
@@ -46,7 +47,10 @@ function Display({ clicker }) {
             <span className="text-gray-600">Seguidores</span>
           </p>
         </div>
-        <Link className=" text-black w-full" href="/profile">
+        <Link
+          className=" text-black w-full"
+          href={`/profile/${userInfo.name_id}/post`}
+        >
           <button className=" flex justify-start gap-6 mt-6 h-16 w-full items-center active:bg-gray-100">
             <FontAwesomeIcon
               icon={faUser}

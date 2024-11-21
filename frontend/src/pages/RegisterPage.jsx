@@ -36,13 +36,10 @@ function RegisterPage() {
   });
   const submitHandler = (e) => {
     e.preventDefault();
-    console.log("test");
     registrarse({
       name: userInformation.user,
       email: userInformation.email,
       password: userInformation.password,
-    }).then((response) => {
-      console.log(response.html);
     });
   };
   useEffect(() => {

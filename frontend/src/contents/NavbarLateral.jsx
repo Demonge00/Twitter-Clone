@@ -29,7 +29,7 @@ function NavbarLateral() {
     setIsActive(location.pathname);
   }, [location, navigate, userInfo.accessToken]);
   return (
-    <nav className="hidden sm:flex flex-col h-screen relative right-0 top-0 border-r pr-6 pt-6 items-end">
+    <nav className="hidden sm:flex flex-col h-screen relative right-0 top-0 border-r pr-6 pt-6 items-end ">
       {/* Lista de iconos */}
       <ul className=" flex flex-col w-full h-full gap-1 items-end ">
         <li>
@@ -184,7 +184,7 @@ function NavbarLateral() {
           <Popover placement="bottom" showArrow>
             <PopoverTrigger>
               <Link
-                href="/profile"
+                href={`/profile/${userInfo.name_id}/post`}
                 className={`${/\/profile/.test(isActive) ? "" : "text-black"}`}
               >
                 <button className=" w-14 h-14 rounded-full active:bg-gray-200">

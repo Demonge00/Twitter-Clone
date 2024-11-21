@@ -25,7 +25,8 @@
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18.3.1",
     "react-router-bootstrap": "^0.26.3",
-    "react-router-dom": "^6.24.1"
+    "react-router-dom": "^6.24.1",
+    "react-scroll": "^1.9.0"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^4.38.0",
@@ -39,6 +40,7 @@
     "eslint-plugin-react-refresh": "^0.4.7",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.4",
+    "tailwindcss-animated": "^1.1.2",
     "vite": "^5.3.1"
   }
 }

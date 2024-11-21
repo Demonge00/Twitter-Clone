@@ -7,6 +7,7 @@ import RegisterPage from "./pages/RegisterPage";
 import RecoverPasswordPage from "./pages/RecoverPasswordPage";
 import NewPasswordPage from "./pages/NewPasswordPage";
 import VerificationPage from "./pages/VerificationPage";
+
 import { UserDetailsProvider } from "./contents/UserContext";
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
             path="/recover-password/:passwordSecret"
             element={<NewPasswordPage />}
           ></Route>
+
           <Route path="*" element={<WorkPage />}></Route>
         </Routes>
       </NextUIProvider>

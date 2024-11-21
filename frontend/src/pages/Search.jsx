@@ -14,10 +14,8 @@ import Display from "../contents/NavList";
 function Search() {
   const [navList, setNavList] = useState(false);
   const [isActive, setIsActive] = useState("/home");
-
   const [searchText, setSearchText] = useState("");
   const [isSearching, setIsSearching] = useState(false);
-
   const location = useLocation();
   useEffect(() => {
     setIsActive(location.pathname);
@@ -79,11 +77,11 @@ function Search() {
       <div
         className={`${
           /\/search/.test(isActive) ? "" : "hidden"
-        } flex w-full  text-base font-bold justify-between h-12 flex-nowrap overflow-x-auto stroke-none mt-2`}
+        } flex w-full  text-base font-bold justify-between h-12 mt-2  overflow-x-scroll scrollbar-hide `}
       >
         <Link
           href="/search/para_ti"
-          className={`min-w-32 w-1/5 h-full justify-center ${
+          className={`min-w-32 w-1/5 h-full justify-center sm:min-w-fit px-3 ${
             isActive == "/search/para_ti"
               ? "bg-gray-200 border-b border-blue-500"
               : ""
@@ -93,7 +91,7 @@ function Search() {
         </Link>
         <Link
           href="/search/tendencias"
-          className={`min-w-32 h-full w-1/5 justify-center ${
+          className={`min-w-32 h-full w-1/5 justify-center sm:min-w-fit px-3 ${
             isActive == "/search/tendencias"
               ? "bg-gray-200 border-b border-blue-500"
               : ""
@@ -103,7 +101,7 @@ function Search() {
         </Link>
         <Link
           href="/search/noticias"
-          className={`min-w-32 h-full w-1/5 justify-center ${
+          className={`min-w-32 h-full w-1/5 justify-center sm:min-w-fit  px-3 ${
             isActive == "/search/noticias"
               ? "bg-gray-200 border-b border-blue-500"
               : ""
@@ -113,7 +111,7 @@ function Search() {
         </Link>
         <Link
           href="/search/deportes"
-          className={`min-w-32 h-full w-1/5 justify-center ${
+          className={`min-w-32 h-full w-1/5 justify-center sm:min-w-fit px-3 ${
             isActive == "/search/deportes"
               ? "bg-gray-200 border-b border-blue-500"
               : ""
@@ -123,7 +121,7 @@ function Search() {
         </Link>
         <Link
           href="/search/entretenimiento"
-          className={`min-w-32 h-full w-1/5 justify-center ${
+          className={`min-w-32 h-full w-1/5 justify-center sm:min-w-fit px-3 ${
             isActive == "/search/entretenimiento"
               ? "bg-gray-200 border-b border-blue-500"
               : ""

@@ -8,13 +8,17 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@nextui-org/link";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 function Navbar() {
+  const location = useLocation();
+  if (location.pathname.match(/profile/)) {
+    return null;
+  }
   return (
     <div>
       {/* Navbar inferior */}
-      <ul className=" absolute bottom-0  w-screen flex justify-between h-14 border-t pt-4 sm:hidden">
+      <ul className=" absolute bottom-0  w-screen flex justify-between h-14 border-t pt-4 sm:hidden z-50 bg-white">
         <li className="text-center w-1/6 h-full max-w-[60px]">
           <Link className=" w-4/6 h-4/6 ">
             <NavLink

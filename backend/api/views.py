@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
+from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.files.storage import default_storage
 from django.db.utils import IntegrityError
 from django.core.mail import send_mail
@@ -49,25 +50,25 @@ class UserList(APIView):
 
     permission_classes = [IsAuthenticated | ReadOnly]
 
-    def get(self, request, format=None):
+    def get(self, request, userNameId=None, format=None):
+        print(userNameId)
         try:
-            snippets = User.objects.get(email=request.data['email'])
+            snippets = User.objects.get(name_id=userNameId)
             serializer = UserSerializer(snippets)
-            print(serializer.data)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         except:
             return Response({'message': 'Ususario no existe'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, format=None):
+    def post(self, request):
         verify_secret = get_random_string(length=32)
         number_id = get_random_string(length=6)
         if 'password' in request.data and 'email' in request.data and 'name' in request.data:
             try:
+                print('qweqwe')
                 name_id = request.data["name"] + number_id
-                print(name_id)
                 user = User.objects.create_user(name=request.data["name"], name_id=name_id, email=request.data["email"], password=request.data['password'], is_active=False,
                                                 is_staff=False,
-                                                verification_secret=verify_secret,)
+                                                verification_secret=verify_secret)
             except IntegrityError:
                 return Response({'message': 'User alredy registered'}, status=status.HTTP_400_BAD_REQUEST)
             except:
@@ -110,14 +111,27 @@ class UserList(APIView):
     def put(self, request, format=None):
         flag = False
         user = User.objects.get(id=request.user.id)
-        if "name" in request.data:
-            user.name = request.data['name']
+        print(request.FILES.get('bg_image'))
+        if "name" in request.POST:
+            user.name = request.POST.get('name')
             flag = True
-        if "password" in request.data:
-            user.password = make_password(request.data["password"])
+        if "name_id" in request.POST:
+            user.name_id = request.POST.get('name_id')
             flag = True
-        if "name_id" in request.data:
-            user.name_id = request.data['name_id']
+        if "location" in request.POST:
+            user.location = request.POST.get('location')
+            flag = True
+        if "link" in request.POST:
+            user.link = request.POST.get('link')
+            flag = True
+        if "bio" in request.POST:
+            user.bio = request.POST.get('bio')
+            flag = True
+        if "bg_image" in request.FILES:
+            user.background_pick = request.FILES.get('bg_image')
+            flag = True
+        if "prof_image" in request.FILES:
+            user.profile_pick = request.FILES.get('prof_image')
             flag = True
         if flag:
             print('done')
@@ -125,6 +139,7 @@ class UserList(APIView):
             print(user)
         access_token = RefreshToken.for_user(user)
         access_token['name'] = user.name
+        access_token['name_id'] = user.name_id
         return Response({'access': str(access_token.access_token),
                         'refresh': str(access_token)}, status=status.HTTP_200_OK)
 

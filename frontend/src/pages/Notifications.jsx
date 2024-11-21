@@ -7,6 +7,10 @@ import { useEffect, useState } from "react";
 import Display from "../contents/NavList";
 
 function Notifications() {
+  {
+    /*Test*/
+  }
+
   const [navList, setNavList] = useState(false);
   const [isActive, setIsActive] = useState("/home");
   const location = useLocation();
@@ -50,7 +54,7 @@ function Notifications() {
       <div
         className={`${
           /\/notifications/.test(isActive) ? "" : "hidden"
-        } flex w-full  text-base font-bold justify-between h-12 flex-nowrap overflow-x-auto stroke-none mt-2`}
+        } flex w-full  text-base font-bold justify-between h-12 flex-nowrap overflow-x-auto stroke-none mt-2 scrollbar-hide`}
       >
         <Link
           href="/notifications/todas"

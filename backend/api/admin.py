@@ -10,12 +10,12 @@ class CustomUserAdmin(UserAdmin):
     form = CustomUserChangeForm
     model = CustomUser
     list_display = ('name', "email", 'id', "is_staff", "is_active",
-                    'date_joined', 'sent_verification_email', 'is_verificated')
+                    'date_joined', 'sent_verification_email', 'is_verificated', 'joined_in')
     list_filter = ('name', "email", 'id', "is_staff", "is_active",
                    'date_joined', 'sent_verification_email', 'is_verificated')
     fieldsets = (
         (None, {"fields": ('name', "email", "password",
-         'sent_verification_email', "name_id", 'is_verificated', 'date_joined')}),
+         'sent_verification_email', "name_id", 'is_verificated', 'date_joined', 'background_pick', 'profile_pick')}),
         ("Permissions", {"fields": ("is_staff",
          "is_active")}),
     )

@@ -7,7 +7,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['name', 'name_id', 'email']
+        fields = ['name', 'name_id', 'location',
+                  'link', 'followers', 'follows', 'joined_in', 'bio', 'background_pick', 'profile_pick']
 
     def get_name(self, obj):
         return obj.name

@@ -5,14 +5,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useUserDetails } from "../contents/UserContext";
 
 function VerificationPage() {
-  const { userInfor } = useUserDetails();
+  const { userInfo } = useUserDetails();
   const navigate = useNavigate();
   const params = useParams();
   const { mutate: registrarse, isSuccess } = useMutation({
     mutationFn: (data) => ValidateUser(data),
   });
   useEffect(() => {
-    if (userInfor.accessToken) {
+    if (userInfo.accessToken) {
       navigate("/home");
     }
     if (isSuccess) {
@@ -29,7 +29,7 @@ function VerificationPage() {
     navigate,
     params.userSecret,
     registrarse,
-    userInfor.accessToken,
+    userInfo.accessToken,
   ]);
   return (
     <div

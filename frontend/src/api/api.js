@@ -23,3 +23,16 @@ export const ChangePassword = (data) => {
 export const ChangePasswordResult = (data) => {
   return login.put("feather/password/" + data.url, data.body);
 };
+
+export const GetUserInfo = (data) => {
+  return login.get("feather/user/" + data);
+};
+
+export const ChangeUserProfile = (data) => {
+  return login.put("feather/user/", data, {
+    headers: {
+      Authorization: "Bearer " + data.get("accessToken"),
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};

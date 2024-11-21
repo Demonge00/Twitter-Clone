@@ -16,6 +16,8 @@ function Homepage() {
   }, [location]);
   return (
     <div className={`relative top-0 flex justify-between flex-col border-b`}>
+      {/*Mostrar navbar list*/}
+      {navList ? <Display clicker={() => setNavList(false)} /> : null}
       {/* Parte superior */}
 
       <div
@@ -29,10 +31,6 @@ function Homepage() {
             setNavList(true);
           }}
         />
-
-        {/*Mostrar navbar list*/}
-        {navList ? <Display clicker={() => setNavList(false)} /> : null}
-
         <div className={`flex justify-start m-auto text-blue-500`}>
           <FontAwesomeIcon
             icon={faFeather}

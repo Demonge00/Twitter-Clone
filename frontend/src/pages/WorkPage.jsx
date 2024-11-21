@@ -8,13 +8,15 @@ import Messages from "./Messages";
 import Bookmarks from "./Bookmarks";
 import Comunity from "./Comunity";
 
+import Profile from "./Profile";
+
 function WorkPage() {
   return (
-    <div className="w-screen h-screen grid grid-cols-1 sm:grid-cols-[15%_85%] lg:grid-cols-[30%_30%_20%_20%] mx-auto">
-      <div className=" hidden sm:block w-full h-full max-w-full">
+    <div className="w-screen h-screen grid grid-cols-1 sm:grid-cols-[15%_85%] lg:grid-cols-[25%_50%_25%] xl:grid-cols-[30%_auto_20%_20%] mx-auto">
+      <div className=" hidden sm:block w-full h-full ">
         <NavbarLateral />
       </div>
-      <div className=" h-screen sm:mr-10 lg:mr-0 border-r">
+      <div className=" h-screen sm:mr-10 lg:mr-0 border-r w-full xl:min-w-[550px]">
         <Navbar />
         <Routes>
           <Route path="/home" element={<Homepage />}>
@@ -36,7 +38,18 @@ function WorkPage() {
           <Route path="/messages" element={<Messages />}></Route>
           <Route path="/comunity" element={<Comunity />}></Route>
           <Route path="/bookmarks" element={<Bookmarks />}></Route>
-          <Route path="/profile"></Route>
+          <Route path="/profile/:userNameId" element={<Profile />}>
+            <Route path="/profile/:userNameId/post" element={<Profile />} />
+            <Route
+              path="/profile/:userNameId/responses"
+              element={<Profile />}
+            />
+            <Route
+              path="/profile/:userNameId/pictures-and-videos"
+              element={<Profile />}
+            />
+            <Route path="/profile/:userNameId/likes" element={<Profile />} />
+          </Route>
           <Route path="/settings"></Route>
         </Routes>
       </div>
