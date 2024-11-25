@@ -1,16 +1,13 @@
+import os
 import sys
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, authentication_classes
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
-from rest_framework.parsers import MultiPartParser, FormParser
-from django.core.files.storage import default_storage
 from django.db.utils import IntegrityError
 from django.core.mail import send_mail
 from django.conf import settings
@@ -37,6 +34,9 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['name'] = user.name
         token['name_id'] = user.name_id
+        pick = user.profile_pick.name.split('\\')[
+            6:]
+        token['profile_pick'] = '/'.join(pick)
         return token
 
 
@@ -51,11 +51,21 @@ class UserList(APIView):
     permission_classes = [IsAuthenticated | ReadOnly]
 
     def get(self, request, userNameId=None, format=None):
-        print(userNameId)
+        followed = None
         try:
+            if (request.user.id):
+                try:
+                    User.objects.get(
+                        id=request.user.id).follow.get(name_id=userNameId)
+                    followed = True
+                except Exception as e:
+                    followed = False
             snippets = User.objects.get(name_id=userNameId)
             serializer = UserSerializer(snippets)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            response = serializer.data
+            if followed is not None:
+                response['followed'] = followed
+            return Response(response, status=status.HTTP_200_OK)
         except:
             return Response({'message': 'Ususario no existe'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -111,7 +121,6 @@ class UserList(APIView):
     def put(self, request, format=None):
         flag = False
         user = User.objects.get(id=request.user.id)
-        print(request.FILES.get('bg_image'))
         if "name" in request.POST:
             user.name = request.POST.get('name')
             flag = True
@@ -128,18 +137,33 @@ class UserList(APIView):
             user.bio = request.POST.get('bio')
             flag = True
         if "bg_image" in request.FILES:
-            user.background_pick = request.FILES.get('bg_image')
+            picture = request.FILES.get('bg_image')
+            file_name = picture.name
+            file_path = os.path.join(
+                settings.MEDIA_ROOT, 'background', user.name_id, file_name)
+            if os.path.exists(file_path):
+                user.background_pick = file_path
+            else:
+                user.background_pick = picture
             flag = True
         if "prof_image" in request.FILES:
-            user.profile_pick = request.FILES.get('prof_image')
+            picture = request.FILES.get('prof_image')
+            file_name = picture.name
+            file_path = os.path.join(
+                settings.MEDIA_ROOT, 'profile', user.name_id, file_name)
+            if os.path.exists(file_path):
+                user.profile_pick = file_path
+            else:
+                user.profile_pick = picture
             flag = True
         if flag:
-            print('done')
             user.save()
-            print(user)
         access_token = RefreshToken.for_user(user)
         access_token['name'] = user.name
         access_token['name_id'] = user.name_id
+        pick = user.profile_pick.name.split('\\')[
+            6:]
+        access_token['profile_pick'] = '/'.join(pick)
         return Response({'access': str(access_token.access_token),
                         'refresh': str(access_token)}, status=status.HTTP_200_OK)
 
@@ -158,16 +182,14 @@ class PasswordRecoverList(APIView):
         except:
             return Response({'message': 'Email no existe'}, status=status.HTTP_400_BAD_REQUEST)
 
-
-@api_view(['PUT'])
-def UpdatePassword(request, password_secret):
-    try:
-        user = User.objects.get(password_secret=password_secret)
-        user.password = make_password(request.data['password'])
-        user.save()
-        return Response(status=status.HTTP_200_OK)
-    except:
-        return Response({'message': 'Error'}, status=status.HTTP_400_BAD_REQUEST)
+    def put(self, request, password_secret=None, format=None):
+        try:
+            user = User.objects.get(password_secret=password_secret)
+            user.password = make_password(request.data['password'])
+            user.save()
+            return Response(status=status.HTTP_200_OK)
+        except:
+            return Response({'message': 'Error'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -180,3 +202,26 @@ def VerifyUser(request, verification_secret):
         return Response({'message': 'user_registered'}, status=status.HTTP_200_OK)
     except:
         return Response({'message': 'Unable to verify email'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FollowList(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            user = User.objects.get(id=request.user.id)
+            followed_user = User.objects.get(name_id=request.data['name_id'])
+            follow_unfollow = request.data['follow']
+            if follow_unfollow == False:
+                user.follow.add(followed_user)
+                answer = True
+            else:
+                print('asfasf')
+                user.follow.remove(followed_user)
+                answer = False
+            user.save()
+
+            return Response({'message': 'Relation Created', 'followed': answer}, status=status.HTTP_200_OK)
+        except:
+            return Response({'message': 'Unable to relate'}, status=status.HTTP_400_BAD_REQUEST)

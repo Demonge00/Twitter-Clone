@@ -25,7 +25,11 @@ export const ChangePasswordResult = (data) => {
 };
 
 export const GetUserInfo = (data) => {
-  return login.get("feather/user/" + data);
+  return login.get("feather/user/" + data.url, {
+    headers: {
+      Authorization: "Bearer " + data.accessToken,
+    },
+  });
 };
 
 export const ChangeUserProfile = (data) => {
@@ -33,6 +37,14 @@ export const ChangeUserProfile = (data) => {
     headers: {
       Authorization: "Bearer " + data.get("accessToken"),
       "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const ChangeFollow = (data) => {
+  return login.post("feather/follow/", data.data, {
+    headers: {
+      Authorization: "Bearer " + data.accessToken,
     },
   });
 };

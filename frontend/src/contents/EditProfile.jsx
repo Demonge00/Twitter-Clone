@@ -3,7 +3,7 @@ import { faArrowLeft, faCamera } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Input } from "@nextui-org/input";
 import { Avatar } from "@nextui-org/avatar";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@nextui-org/react";
 import { useMutation } from "@tanstack/react-query";
 import { ChangeUserProfile } from "../api/api";
@@ -21,6 +21,8 @@ function EditProfile({
   const navigate = useNavigate();
   const { userInfo, updateUserInfo } = useUserDetails();
   const [updatedInfo, setUpdatedInfo] = useState({ ...userInformationProp });
+  const [bgImageUrl, setBgImageUrl] = useState(null);
+  const [profImageUrl, setProfImageUrl] = useState(null);
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const { mutate: edit } = useMutation({
@@ -40,9 +42,19 @@ function EditProfile({
   }
   const handleBgImageChange = (event) => {
     setBackgroundImage(event.target.files[0]);
+    const file = event.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setBgImageUrl(url);
+    }
   };
   const handleProfImageChange = (event) => {
     setProfileImage(event.target.files[0]);
+    const file = event.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setProfImageUrl(url);
+    }
   };
   const handleClick = () => {
     const formData = new FormData();
@@ -66,15 +78,15 @@ function EditProfile({
     edit(formData);
   };
   return (
-    <div className=" h-full w-full absolute top-0 left-0">
+    <div className=" h-full w-full absolute top-0 left-0 flex items-center justify-center">
       <div
         className=" w-screen h-screen absolute z-10  bg-black opacity-50"
         onClick={setIsEditingUserProp}
       ></div>
-      <div className=" h-full w-full z-20 absolute sm:left-[30%] sm:top-[20%] bg-white sm:h-[60%] sm:w-1/3 sm:rounded-lg overflow-x-scroll scrollbar-hide">
+      <div className=" h-full w-full z-20 absolute bg-white sm:h-[60%] sm:w-1/3 sm:rounded-lg overflow-x-scroll scrollbar-hide">
         {/*Barra Go Back */}
         <div
-          className={`w-full h-14 pl-5 pr-2 flex items-center gap-9 top-0 border-b-1 justify-between sm:hidden z-20 mb-6`}
+          className={`w-full h-14 pl-5 pr-2 flex items-center gap-9 sticky top-0 border-b-1 justify-between sm:hidden z-50 bg-white mb-6`}
         >
           <button onClick={setIsEditingUserProp}>
             <FontAwesomeIcon icon={faArrowLeft} className="h-4 text-black" />
@@ -92,8 +104,12 @@ function EditProfile({
         {/*Imagenes*/}
         <div className=" w-full h-28 sm:h-40 sm:rounded-t-lg flex justify-center items-center z-20">
           <img
-            className=" w-full h-40 absolute z-20 object-cover"
-            src={`http://localhost:8000/feather${updatedInfo.background_pick}`}
+            className=" w-full h-40 absolute z-20 object-fit"
+            src={`${
+              bgImageUrl
+                ? bgImageUrl
+                : `http://localhost:8000/feather${updatedInfo.background_pick}`
+            }`}
           ></img>
           <label
             htmlFor="file-id"
@@ -108,7 +124,7 @@ function EditProfile({
             onChange={handleBgImageChange}
           ></input>
         </div>
-        <div className="absolute z-50 left-6 mt-1 sm:-mt-4 sm:left-8 lg:left-11 lg:-mt-7 opacity-90">
+        <div className="absolute z-40 left-6 mt-1 sm:-mt-4 sm:left-8 lg:left-11 lg:-mt-7 opacity-90">
           <label
             htmlFor="file-id2"
             className="w-8 h-8 lg:w-12 lg:h-12  bg-slate-600 cursor-pointer rounded-full items-center justify-center flex"
@@ -123,7 +139,11 @@ function EditProfile({
           ></input>
         </div>
         <Avatar
-          src={`http://localhost:8000/feather${updatedInfo.profile_pick}`}
+          src={`${
+            profImageUrl
+              ? profImageUrl
+              : `http://localhost:8000/feather${updatedInfo.profile_pick}`
+          }`}
           className="h-14 w-14 mt-1 ml-3 relative -top-3 ring-4 ring-white sm:w-18 sm:h-18 sm:-top-8 sm:ml-5 z-30 lg:w-24 lg:h-24 lg:-top-14"
         ></Avatar>
         {/*Imagenes*/}

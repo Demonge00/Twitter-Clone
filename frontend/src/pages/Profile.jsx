@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { useUserDetails } from "../contents/UserContext";
 import { useMutation } from "@tanstack/react-query";
-import { GetUserInfo } from "../api/api";
+import { GetUserInfo, ChangeFollow } from "../api/api";
 import EditProfile from "../contents/EditProfile";
 
 function Profile() {
@@ -34,6 +34,7 @@ function Profile() {
       setUserInfomation(response.data);
     },
   });
+  //Scrolls
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollPosition = window.scrollY; // Posición actual del scroll
@@ -49,11 +50,27 @@ function Profile() {
     };
   }, [scroll]);
   useEffect(() => {
-    info(params.userNameId);
-  }, [isEditingUser]);
+    info({ url: params.userNameId, accessToken: userInfo.accessToken });
+  }, [isEditingUser, location]);
   useEffect(() => {
     setIsActive(location.pathname);
   }, [location, params.userNameId, userInfomation]);
+  //Handlers
+  const handleFollow = () => {
+    ChangeFollow({
+      accessToken: userInfo.accessToken,
+      data: {
+        name_id: params.userNameId,
+        follow: userInfomation.followed,
+      },
+    }).then((response) => {
+      setUserInfomation({
+        ...userInfomation,
+        followed: response.data.followed,
+        followers: userInfomation.followers + (response.data.followed ? 1 : -1),
+      });
+    });
+  };
 
   return (
     <div className=" w-full h-screen z-10 min-h-[300px]">
@@ -101,7 +118,23 @@ function Profile() {
           >
             Editar Perfil
           </Button>
-        ) : null}
+        ) : userInfomation.followed ? (
+          <Button
+            className=" mr-4 ml-auto rounded-full -mt-10 bg-white border border-black active:bg-gray-200 font-bold block"
+            size="sm"
+            onClick={() => handleFollow()}
+          >
+            Dejar de Seguir
+          </Button>
+        ) : (
+          <Button
+            className=" mr-4 ml-auto rounded-full -mt-10 bg-white border border-black active:bg-gray-200 font-bold block"
+            size="sm"
+            onClick={() => handleFollow()}
+          >
+            Seguir
+          </Button>
+        )}
 
         {isError ? (
           <div>Ha ocurrido un error con tu conexión</div>
@@ -158,7 +191,7 @@ function Profile() {
         flex w-full  text-base font-bold justify-between h-12 flex-nowrap overflow-x-auto stroke-none mt-2 scrollbar-hide `}
         >
           <Link
-            href={`/profile/${userInfo.name_id}/post`}
+            href={`/profile/${params.userNameId}/post`}
             className={`min-w-32 w-1/5 h-full justify-center ${
               isActive.match(/post/)
                 ? "bg-gray-200 border-b border-blue-500 text-black"
@@ -168,7 +201,7 @@ function Profile() {
             Post
           </Link>
           <Link
-            href={`/profile/${userInfo.name_id}/responses`}
+            href={`/profile/${params.userNameId}/responses`}
             className={`min-w-32 h-full w-1/5 justify-center ${
               isActive.match(/responses/)
                 ? "bg-gray-200 border-b border-blue-500 text-black"
@@ -178,7 +211,7 @@ function Profile() {
             Respuestas
           </Link>
           <Link
-            href={`/profile/${userInfo.name_id}/pictures-and-videos`}
+            href={`/profile/${params.userNameId}/pictures-and-videos`}
             className={`min-w-32 h-full w-1/5 justify-center ${
               isActive.match(/pictures-and-videos/)
                 ? "bg-gray-200 border-b border-blue-500 text-black"
@@ -188,7 +221,7 @@ function Profile() {
             Fotos y videos
           </Link>
           <Link
-            href={`/profile/${userInfo.name_id}/likes`}
+            href={`/profile/${params.userNameId}/likes`}
             className={`min-w-32 h-full w-1/5 justify-center ${
               isActive.match(/likes/)
                 ? "bg-gray-200 border-b border-blue-500 text-black"

@@ -10,7 +10,6 @@ function Bookmarks() {
 
   useEffect(() => {
     setIsActive(location.pathname);
-    console.log(location.pathname);
   }, [location]);
 
   return (

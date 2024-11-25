@@ -8,6 +8,7 @@ import {
   faSearch,
   faUser,
   faUserGroup,
+  faPen,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@nextui-org/link";
@@ -16,11 +17,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
 import { useUserDetails } from "./UserContext";
+import PostPublication from "./PostPublication";
 
 function NavbarLateral() {
   const navigate = useNavigate();
   const { userInfo, updateUserInfo } = useUserDetails();
   const [isActive, setIsActive] = useState("/home");
+  const [isPosting, setIsPosting] = useState(false);
   const location = useLocation();
   useEffect(() => {
     if (userInfo.accessToken == false) {
@@ -29,7 +32,7 @@ function NavbarLateral() {
     setIsActive(location.pathname);
   }, [location, navigate, userInfo.accessToken]);
   return (
-    <nav className="hidden sm:flex flex-col h-screen relative right-0 top-0 border-r pr-6 pt-6 items-end ">
+    <nav className="hidden sm:flex flex-col h-screen border-r pr-6 pt-4 items-end ">
       {/* Lista de iconos */}
       <ul className=" flex flex-col w-full h-full gap-1 items-end ">
         <li>
@@ -224,26 +227,55 @@ function NavbarLateral() {
             </PopoverContent>
           </Popover>
         </li>
+        <li>
+          <Popover placement="bottom" showArrow>
+            <PopoverTrigger>
+              <button
+                className=" w-12 h-12 rounded-full bg-blue-500 mb-2 mr-1"
+                onClick={() => setIsPosting(true)}
+              >
+                <FontAwesomeIcon
+                  icon={faPen}
+                  className=" h-8 w-8 text-white rotate-[270deg]"
+                ></FontAwesomeIcon>
+              </button>
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className="px-1 py-2">
+                <div className="text-xs font-bold">Postear</div>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </li>
+        <li className=" mb-0 mt-auto">
+          {/* User profile chequear el onclick para el logout */}
+          <Popover placement="top-start" showArrow>
+            <PopoverTrigger>
+              <Avatar
+                src={`http://localhost:8000/feather/${userInfo.profile_pick}`}
+                className=" mb-6 mr-2"
+              />
+            </PopoverTrigger>
+            <PopoverContent>
+              <div className="px-1 py-2 w-48">
+                <Link
+                  href="/login"
+                  color="danger"
+                  onClick={() => {
+                    updateUserInfo(false, false);
+                  }}
+                >
+                  Cerrar la sección del usuario
+                </Link>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </li>
       </ul>
-      {/* User profile chequear el onclick para el logout */}
-      <Popover placement="top-start" showArrow className=" mb-2">
-        <PopoverTrigger>
-          <Avatar src="" className=" mb-6 mr-2" />
-        </PopoverTrigger>
-        <PopoverContent>
-          <div className="px-1 py-2 w-48">
-            <Link
-              href="/login"
-              color="danger"
-              onClick={() => {
-                updateUserInfo(false, false);
-              }}
-            >
-              Cerrar la sección del usuario
-            </Link>
-          </div>
-        </PopoverContent>
-      </Popover>
+      {/*Posteador*/}
+      {isPosting ? (
+        <PostPublication setIsPostingProp={(e) => setIsPosting(e)} />
+      ) : null}
     </nav>
   );
 }

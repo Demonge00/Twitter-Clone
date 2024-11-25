@@ -5,12 +5,16 @@ import {
   faHouse,
   faSearch,
   faUsers,
+  faPen,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@nextui-org/link";
+import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
+import PostPublication from "./PostPublication";
 
 function Navbar() {
+  const [isPosting, setIsPosting] = useState(false);
   const location = useLocation();
   if (location.pathname.match(/profile/)) {
     return null;
@@ -103,7 +107,20 @@ function Navbar() {
             </NavLink>
           </Link>
         </li>
+        <button
+          className=" w-14 h-14 rounded-full bg-blue-500 mb-2 mr-1 absolute -top-[4.5rem] right-5 active:bg-black"
+          onClick={() => setIsPosting(true)}
+        >
+          <FontAwesomeIcon
+            icon={faPen}
+            className=" h-8 w-8 text-white rotate-[270deg]"
+          ></FontAwesomeIcon>
+        </button>
       </ul>
+      {/*Posteador*/}
+      {isPosting ? (
+        <PostPublication setIsPostingProp={(e) => setIsPosting(e)} />
+      ) : null}
     </div>
   );
 }

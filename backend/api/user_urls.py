@@ -14,7 +14,7 @@ urlpatterns = [
     path('token/', views.MyTokenObtainPairView.as_view(),
          name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('password/', views.PasswordRecoverList.as_view(), name='recover_password'),
-    path('password/<password_secret>',
-         views.UpdatePassword, name='update_password'),
+    re_path('password/(?P<password_secret>\S+)?/?$',
+            views.PasswordRecoverList.as_view(), name='recover_password'),
+    path('follow/', views.FollowList.as_view(), name='follow_management')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

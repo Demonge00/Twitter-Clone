@@ -1,3 +1,4 @@
+import hashlib
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.utils import timezone
@@ -27,6 +28,15 @@ translate = {
     11: 'Noviembre',
     12: 'Diciembre'
 }
+# Comprobar duplicado por contenidos de la imagen
+
+
+def get_file_hash(file):
+    hash_md5 = hashlib.md5()
+    for chunk in iter(lambda: file.read(4096), b""):
+        hash_md5.update(chunk)
+    file.seek(0)  # Resetear el puntero del archivo
+    return hash_md5.hexdigest()
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -40,8 +50,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         upload_to=upload_path_profile, blank=True, null=True)
     link = models.CharField(max_length=100, null=True)
     bio = models.TextField(null=True, max_length=200)
-    follows = models.IntegerField(default=0)
-    followers = models.IntegerField(default=0)
+    follow = models.ManyToManyField(
+        "self", symmetrical=False, related_name="followed_by")
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -62,3 +72,21 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def joined_in(self):
         return 'Se unio en ' + translate[self.date_joined.month] + ' del año ' + str(self.date_joined.year)
+
+    def follows(self):
+        return len(self.follow.all())
+
+    def followers(self):
+        return len(self.followed_by.all())
+
+
+class Publication(models.Model):
+    creator = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, related_name="publications")
+    message = models.TextField(max_length=300)
+    likers = models.ManyToManyField(CustomUser, related_name="likes")
+    response_of = models.ForeignKey(
+        CustomUser, on_delete=models.CASCADE, null=True, default=None, related_name='responses')
+    retweeters = models.ManyToManyField(
+        CustomUser, related_name='retweets')
+    views = models.IntegerField(default=0)

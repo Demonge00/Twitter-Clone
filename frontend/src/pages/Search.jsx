@@ -8,10 +8,12 @@ import { Link } from "@nextui-org/link";
 import { Avatar } from "@nextui-org/avatar";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useUserDetails } from "../contents/UserContext";
 
 import Display from "../contents/NavList";
 
 function Search() {
+  const { userInfo } = useUserDetails();
   const [navList, setNavList] = useState(false);
   const [isActive, setIsActive] = useState("/home");
   const [searchText, setSearchText] = useState("");
@@ -28,7 +30,7 @@ function Search() {
       {/* Parte superior */}
       <div className={` flex w-full text-xl justify-between h-12 pt-2 pl-3`}>
         <Avatar
-          src=""
+          src={`http://localhost:8000/feather/${userInfo.profile_pick}`}
           className={`
             } h-8 w-8 mt-1 ml-2 sm:hidden`}
           onClick={() => {

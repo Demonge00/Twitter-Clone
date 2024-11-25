@@ -24,12 +24,14 @@ export function UserDetailsProvider(props) {
   var userAccessToken = false;
   var userRefreshToken = false;
   var userName = false;
+  var profile_pick = false;
   var userNameId;
   if (jsonParsed) {
     if (jsonParsed.accessToken) {
       userAccessToken = jsonParsed.accessToken;
       userName = jwtDecode(userAccessToken).name;
       userNameId = jwtDecode(userAccessToken).name_id;
+      profile_pick = jwtDecode(userAccessToken).profile_pick;
     } else {
       userAccessToken = false;
       userName = false;
@@ -44,6 +46,7 @@ export function UserDetailsProvider(props) {
     refreshToken: userRefreshToken,
     name: userName,
     name_id: userNameId,
+    profile_pick: profile_pick,
   });
   const updateUserInfo = useCallback(
     (accessToken, refreshToken) => {
@@ -53,12 +56,15 @@ export function UserDetailsProvider(props) {
       if (accessToken === false) {
         newUserInfo.name = false;
         newUserInfo.name_id = false;
+        newUserInfo.profile_pick = false;
         console.log(newUserInfo);
       } else {
         const jwt_decoded = jwtDecode(newUserInfo.accessToken);
         newUserInfo.name = jwt_decoded.name;
         newUserInfo.name_id = jwt_decoded.name_id;
+        newUserInfo.profile_pick = jwt_decoded.profile_pick;
       }
+      console.log(newUserInfo);
       setUserInfo(newUserInfo);
       localStorage.setItem("userDetails", JSON.stringify(newUserInfo));
     },

@@ -14,7 +14,6 @@ function Comunity() {
 
   useEffect(() => {
     setIsActive(location.pathname);
-    console.log(location.pathname);
   }, [location]);
 
   return (

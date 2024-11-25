@@ -5,25 +5,22 @@ import { Avatar } from "@nextui-org/avatar";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Display from "../contents/NavList";
+import { useUserDetails } from "../contents/UserContext";
 
 function Notifications() {
-  {
-    /*Test*/
-  }
-
+  const { userInfo } = useUserDetails();
   const [navList, setNavList] = useState(false);
   const [isActive, setIsActive] = useState("/home");
   const location = useLocation();
   useEffect(() => {
     setIsActive(location.pathname);
-    console.log(location.pathname);
   }, [location]);
   return (
     <div className={`relative top-0 flex justify-between flex-col border-b`}>
       {/* Parte superior */}
       <div className={` flex w-full text-xl justify-between h-12 pt-2 pl-3`}>
         <Avatar
-          src=""
+          src={`http://localhost:8000/feather/${userInfo.profile_pick}`}
           className={`
           } h-8 w-8 mt-1 ml-2 sm:hidden`}
           onClick={() => {

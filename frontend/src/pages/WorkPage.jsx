@@ -12,8 +12,8 @@ import Profile from "./Profile";
 
 function WorkPage() {
   return (
-    <div className="w-screen h-screen grid grid-cols-1 sm:grid-cols-[15%_85%] lg:grid-cols-[25%_50%_25%] xl:grid-cols-[30%_auto_20%_20%] mx-auto">
-      <div className=" hidden sm:block w-full h-full ">
+    <div className="w-screen h-screen grid grid-cols-1 sm:grid-cols-[15%_85%] lg:grid-cols-[25%_50%_25%] xl:grid-cols-[30%_auto_20%_20%] mx-auto overflow-hidden">
+      <div className=" hidden sm:block w-full h-full overflow-y-auto">
         <NavbarLateral />
       </div>
       <div className=" h-screen sm:mr-10 lg:mr-0 border-r w-full xl:min-w-[550px]">

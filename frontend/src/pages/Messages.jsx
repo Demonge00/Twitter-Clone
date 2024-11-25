@@ -8,8 +8,10 @@ import { Avatar } from "@nextui-org/avatar";
 import { useState } from "react";
 import { Link } from "@nextui-org/link";
 import Display from "../contents/NavList";
+import { useUserDetails } from "../contents/UserContext";
 
 function Messages() {
+  const { userInfo } = useUserDetails();
   const [navList, setNavList] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [isSearching, setIsSearching] = useState(false);
@@ -19,7 +21,7 @@ function Messages() {
       {/* Parte superior */}
       <div className={` flex w-full text-xl justify-between h-12 pt-2 pl-3`}>
         <Avatar
-          src=""
+          src={`http://localhost:8000/feather/${userInfo.profile_pick}`}
           className={`
       } h-8 w-8 mt-1 ml-2 sm:hidden`}
           onClick={() => {
