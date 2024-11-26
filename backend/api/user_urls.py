@@ -16,5 +16,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     re_path('password/(?P<password_secret>\S+)?/?$',
             views.PasswordRecoverList.as_view(), name='recover_password'),
-    path('follow/', views.FollowList.as_view(), name='follow_management')
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('follow/', views.FollowList.as_view(), name='follow_management'),
+    path('post/', views.PostingView.as_view(), name='posting_management'),
+    path('security/', views.Protection.as_view(), name='posting_management'),
+] + static('/media/', document_root=settings.MEDIA_ROOT)

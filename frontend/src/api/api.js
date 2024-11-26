@@ -48,3 +48,25 @@ export const ChangeFollow = (data) => {
     },
   });
 };
+
+export const Posting = (data) => {
+  return login.post("feather/post/", data, {
+    headers: {
+      Authorization: "Bearer " + data.get("accessToken"),
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const Security = (data) => {
+  return login.get("feather/security/", {
+    headers: {
+      Authorization: "Bearer " + data,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const TryRefreshToken = (data) => {
+  return login.post("feather/token/refresh/", data);
+};

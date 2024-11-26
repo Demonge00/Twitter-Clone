@@ -57,14 +57,12 @@ export function UserDetailsProvider(props) {
         newUserInfo.name = false;
         newUserInfo.name_id = false;
         newUserInfo.profile_pick = false;
-        console.log(newUserInfo);
       } else {
         const jwt_decoded = jwtDecode(newUserInfo.accessToken);
         newUserInfo.name = jwt_decoded.name;
         newUserInfo.name_id = jwt_decoded.name_id;
         newUserInfo.profile_pick = jwt_decoded.profile_pick;
       }
-      console.log(newUserInfo);
       setUserInfo(newUserInfo);
       localStorage.setItem("userDetails", JSON.stringify(newUserInfo));
     },

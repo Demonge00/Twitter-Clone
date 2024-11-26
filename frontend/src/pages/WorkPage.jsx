@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Homepage from "./Homepage";
 import Navbar from "../contents/Navbar";
 import NavbarLateral from "../contents/NavbarLateral";
@@ -7,10 +7,25 @@ import Notifications from "./Notifications";
 import Messages from "./Messages";
 import Bookmarks from "./Bookmarks";
 import Comunity from "./Comunity";
-
 import Profile from "./Profile";
+import { useEffect } from "react";
+import { useUserDetails } from "../contents/UserContext";
+import { Security, TryRefreshToken } from "../api/api";
 
 function WorkPage() {
+  const location = useLocation();
+  const { userInfo, updateUserInfo } = useUserDetails();
+  useEffect(() => {
+    Security(userInfo.accessToken).catch(() => {
+      TryRefreshToken({ refresh: userInfo.refreshToken })
+        .then((response) => {
+          updateUserInfo(response.data.access, userInfo.refreshToken);
+        })
+        .catch(() => {
+          updateUserInfo(false, false);
+        });
+    });
+  }, [location]);
   return (
     <div className="w-screen h-screen grid grid-cols-1 sm:grid-cols-[15%_85%] lg:grid-cols-[25%_50%_25%] xl:grid-cols-[30%_auto_20%_20%] mx-auto overflow-hidden">
       <div className=" hidden sm:block w-full h-full overflow-y-auto">

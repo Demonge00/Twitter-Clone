@@ -11,7 +11,7 @@ import { Avatar } from "@nextui-org/avatar";
 import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { useMutation } from "@tanstack/react-query";
-import { ChangeUserProfile } from "../api/api";
+import { Posting } from "../api/api";
 import { useUserDetails } from "./UserContext";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
@@ -19,13 +19,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
 
 function PostPublication({ setIsPostingProp }) {
   const { userInfo } = useUserDetails();
-  const [postingInfo, setPostingInfo] = useState({});
+  const [postingInfo, setPostingInfo] = useState({ text: "" });
   const [isPickerVisible, setPickerVisible] = useState(false);
   const [bgImageUrl, setBgImageUrl] = useState(null);
   const [backgroundImage, setBackgroundImage] = useState(null);
-  const [isPubRestricted, setPubRestricted] = useState(false);
-  const { mutate: edit } = useMutation({
-    mutationFn: (data) => ChangeUserProfile(data),
+  const [isPubRestricted, setPubRestricted] = useState(0);
+  const { mutate: post } = useMutation({
+    mutationFn: (data) => Posting(data),
     onSuccess: () => {
       setIsPostingProp(false);
     },
@@ -68,17 +68,9 @@ function PostPublication({ setIsPostingProp }) {
       formData.append("bg_image", backgroundImage, backgroundImage.name);
     }
     formData.append("accessToken", userInfo.accessToken);
-    for (let clave in postingInfo) {
-      if (
-        clave == "name" ||
-        clave == "name_id" ||
-        clave == "bio" ||
-        clave == "link" ||
-        clave == "location"
-      )
-        formData.append(clave.toString(), postingInfo[clave]);
-    }
-    edit(formData);
+    formData.append("text", postingInfo.text);
+    formData.append("privacity", isPubRestricted);
+    post(formData);
   };
   return (
     <div className=" h-screen w-screen absolute top-0 left-0 flex items-center justify-center z-50">
@@ -95,7 +87,12 @@ function PostPublication({ setIsPostingProp }) {
           <button onClick={() => setIsPostingProp(false)}>
             <FontAwesomeIcon icon={faArrowLeft} className="h-4 text-black" />
           </button>
-          <Button color="primary" className="rounded-full" onClick={handlePost}>
+          <Button
+            color="primary"
+            className="rounded-full"
+            onClick={handlePost}
+            isDisabled={!postingInfo.text}
+          >
             Postear
           </Button>
         </div>
@@ -163,7 +160,7 @@ function PostPublication({ setIsPostingProp }) {
                   <FontAwesomeIcon icon={faSmile} className=" h-6" />
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="h-1 w-0">
+              <PopoverContent>
                 {isPickerVisible ? (
                   <Picker
                     data={data}
@@ -174,6 +171,7 @@ function PostPublication({ setIsPostingProp }) {
                         text: postingInfo.text + e.native,
                       })
                     }
+                    perLine={7}
                     onClickOutside={() => {
                       setPickerVisible(false);
                     }}
@@ -190,7 +188,7 @@ function PostPublication({ setIsPostingProp }) {
               <PopoverContent>
                 <ol className="flex flex-col text-blue-600 text-xl items-center justify-center">
                   <a
-                    onClick={() => setPubRestricted(false)}
+                    onClick={() => setPubRestricted(0)}
                     className={`${
                       isPubRestricted ? "text-gray-500" : null
                     } mb-3 mt-1`}
@@ -199,7 +197,7 @@ function PostPublication({ setIsPostingProp }) {
                   </a>
 
                   <a
-                    onClick={() => setPubRestricted(true)}
+                    onClick={() => setPubRestricted(1)}
                     className={`${
                       !isPubRestricted ? "text-gray-500" : null
                     } mb-1`}

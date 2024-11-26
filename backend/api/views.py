@@ -11,6 +11,7 @@ from django.contrib.auth.hashers import make_password
 from django.db.utils import IntegrityError
 from django.core.mail import send_mail
 from django.conf import settings
+from api.models import Publication
 from django.utils.crypto import get_random_string
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -42,6 +43,13 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+class Protection(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(status=status.HTTP_200_OK)
 
 # UserManagement
 
@@ -107,16 +115,6 @@ class UserList(APIView):
                 settings.VERIFICATION_URL}/{verify_secret}">este link</a> para verificar tu cuenta.'
             }, status=status.HTTP_200_OK)
         return Response({'message': 'Missing info'}, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, format=None):
-        try:
-            print(request.user.id)
-            user = User.objects.get(id=request.user.id)
-            print(user)
-            user.delete()
-            return (Response(status=status.HTTP_200_OK))
-        except:
-            return Response({'message': 'Error deleting'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, format=None):
         flag = False
@@ -213,7 +211,7 @@ class FollowList(APIView):
             user = User.objects.get(id=request.user.id)
             followed_user = User.objects.get(name_id=request.data['name_id'])
             follow_unfollow = request.data['follow']
-            if follow_unfollow == False:
+            if follow_unfollow is False:
                 user.follow.add(followed_user)
                 answer = True
             else:
@@ -225,3 +223,33 @@ class FollowList(APIView):
             return Response({'message': 'Relation Created', 'followed': answer}, status=status.HTTP_200_OK)
         except:
             return Response({'message': 'Unable to relate'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PostingView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if 'text' in request.POST and 'privacity' in request.POST:
+            try:
+
+                creator = User.objects.get(id=request.user.id)
+                text = request.POST.get('text')
+                privacity = request.POST.get('privacity')
+
+                pub = Publication(
+                    creator=creator, message=text, is_private=privacity)
+                if "bg_image" in request.FILES:
+                    picture = request.FILES.get('bg_image')
+                    file_name = picture.name
+                    file_path = os.path.join(
+                        settings.MEDIA_ROOT, 'publication', creator.name_id, file_name)
+                    if os.path.exists(file_path):
+                        pub.publication_pick = file_path
+                    else:
+                        pub.publication_pick = picture
+                pub.save()
+                return Response({'message': 'Publication Created'}, status=status.HTTP_200_OK)
+            except:
+                return Response({'message': 'Unable to create'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message': 'Unable to post'}, status=status.HTTP_400_BAD_REQUEST)

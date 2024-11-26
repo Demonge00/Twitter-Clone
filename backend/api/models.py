@@ -14,6 +14,10 @@ def upload_path_profile(instance, filename):
     return '/'.join(['profile', str(instance.name_id), filename])
 
 
+def upload_path_pub(instance, filename):
+    return '/'.join(['publication', str(instance.creator.name_id), filename])
+
+
 translate = {
     1: 'Enero',
     2: 'Febrero',
@@ -84,9 +88,16 @@ class Publication(models.Model):
     creator = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="publications")
     message = models.TextField(max_length=300)
+    creation_date = models.DateTimeField(default=timezone.now)
     likers = models.ManyToManyField(CustomUser, related_name="likes")
     response_of = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, null=True, default=None, related_name='responses')
+        'self', on_delete=models.CASCADE, null=True, default=None, related_name='responses')
     retweeters = models.ManyToManyField(
         CustomUser, related_name='retweets')
+    looked_by = models.ManyToManyField(CustomUser, related_name="Pub_looks")
+    bookmarked_by = models.ManyToManyField(
+        CustomUser, related_name="bookmarks")
+    is_private = models.BooleanField(default=False)
     views = models.IntegerField(default=0)
+    publication_pick = models.ImageField(
+        upload_to=upload_path_pub, blank=True, null=True)
