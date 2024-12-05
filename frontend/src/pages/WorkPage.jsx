@@ -8,7 +8,7 @@ import Messages from "./Messages";
 import Bookmarks from "./Bookmarks";
 import Comunity from "./Comunity";
 import Profile from "./Profile";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useUserDetails } from "../contents/UserContext";
 import { OpacityContext } from "../contents/OpacityContext";
 import { Security, TryRefreshToken } from "../api/api";

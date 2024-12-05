@@ -30,6 +30,8 @@ function Homepage() {
 
     scrollable.addEventListener("scroll", handleScroll);
 
+    setOpacity(1);
+
     return () => {
       scrollable.removeEventListener("scroll", handleScroll);
     };

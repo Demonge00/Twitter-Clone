@@ -10,11 +10,31 @@ import { useMutation } from "@tanstack/react-query";
 import { CircularProgress } from "@nextui-org/progress";
 import Publication from "../contents/Publication";
 import { GetList } from "../api/api";
+import { ObtainOpacity } from "../contents/OpacityContext";
 function Notifications() {
   const { userInfo } = useUserDetails();
   const [navList, setNavList] = useState(false);
   const [information, setInformation] = useState(null);
   const [isActive, setIsActive] = useState("/home");
+  const { setOpacity } = ObtainOpacity();
+
+  useEffect(() => {
+    const scrollable = document.getElementById("scroll-component");
+    const handleScroll = () => {
+      const maxScroll = 300;
+      const scrollY = scrollable.scrollTop;
+      const newOpacity = Math.max(1 - scrollY / maxScroll, 0.5);
+      setOpacity(newOpacity);
+    };
+
+    scrollable.addEventListener("scroll", handleScroll);
+
+    setOpacity(1);
+
+    return () => {
+      scrollable.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   const {
     mutate: obtainList,
     isLoading,
