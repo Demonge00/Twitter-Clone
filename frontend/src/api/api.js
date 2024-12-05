@@ -71,8 +71,64 @@ export const TryRefreshToken = (data) => {
   return login.post("feather/token/refresh/", data);
 };
 
-export const GetList = (data) => {
-  return login.get("feather/post/list", {
+export const GetListForYou = (data) => {
+  return login.get("feather/post/list/for_you", {
+    headers: {
+      Authorization: "Bearer " + data,
+    },
+  });
+};
+export const GetListFollow = (data) => {
+  return login.get("feather/post/list/follows", {
+    headers: {
+      Authorization: "Bearer " + data,
+    },
+  });
+};
+export const GetListForYouAll = (data) => {
+  return login.get("feather/post/list/for_you_all", {
+    headers: {
+      Authorization: "Bearer " + data,
+    },
+  });
+};
+export const GetListTendences = (data) => {
+  return login.get("feather/post/list/tendences", {
+    headers: {
+      Authorization: "Bearer " + data,
+    },
+  });
+};
+export const GetListBookmarked = (data) => {
+  return login.get("feather/post/list/bookmarks", {
+    headers: {
+      Authorization: "Bearer " + data,
+    },
+  });
+};
+export const GetListPosts = (data) => {
+  return login.get("feather/post/list/posts", {
+    headers: {
+      Authorization: "Bearer " + data,
+    },
+  });
+};
+export const GetListResponses = (data) => {
+  return login.get("feather/post/list/responses", {
+    headers: {
+      Authorization: "Bearer " + data,
+    },
+  });
+};
+export const GetListLikes = (data) => {
+  return login.get("feather/post/list/likes", {
+    headers: {
+      Authorization: "Bearer " + data,
+    },
+  });
+};
+export const GetListMultimed = (data) => {
+  return login.get("feather/post/list/multimedia", {
     headers: {
       Authorization: "Bearer " + data,
     },

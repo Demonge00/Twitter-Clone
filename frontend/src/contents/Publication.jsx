@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "@nextui-org/avatar";
 import { useEffect, useState } from "react";
 import { useUserDetails } from "./UserContext";
+import { Link } from "@nextui-org/link";
 import {
   GetPostInfo,
   ChangeLike,
@@ -90,6 +91,8 @@ function Publication({ info }) {
       {/*TextArea*/}
       <div className="flex w-full flex-wrap justify-start gap-2 ">
         <Avatar
+          as={Link}
+          href={`/profile/${publicationInfo.name_id}`}
           src={`http://localhost:8000/feather${publicationInfo.avatar}`}
           className="h-12 w-12 ml-1 sm:h-14 sm:w-14 top-1 ring-4 ring-white sm:max-w-1/4"
         ></Avatar>

@@ -13,7 +13,16 @@ import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { useUserDetails } from "../contents/UserContext";
 import { useMutation } from "@tanstack/react-query";
-import { GetUserInfo, ChangeFollow } from "../api/api";
+import { CircularProgress } from "@nextui-org/progress";
+import Publication from "../contents/Publication";
+import {
+  GetUserInfo,
+  ChangeFollow,
+  GetListPosts,
+  GetListResponses,
+  GetListMultimed,
+  GetListLikes,
+} from "../api/api";
 import EditProfile from "../contents/EditProfile";
 
 function Profile() {
@@ -22,6 +31,7 @@ function Profile() {
   const [userInfomation, setUserInfomation] = useState({});
   const [isActive, setIsActive] = useState("/home");
   const [scroll, setScroll] = useState(0);
+  const [information, setInformation] = useState(null);
   const [isEditingUser, setIsEditingUser] = useState(false);
   const location = useLocation();
   const {
@@ -34,6 +44,28 @@ function Profile() {
       setUserInfomation(response.data);
     },
   });
+  {
+    /*Request*/
+  }
+  const {
+    mutate: obtainList,
+    isSuccess,
+    isLoading: LoadingFunct,
+  } = useMutation({
+    mutationFn: (data) => {
+      if (location.pathname.match(/post/)) return GetListPosts(data);
+      else if (location.pathname.match(/responses/))
+        return GetListResponses(data);
+      else if (location.pathname.match(/pictures-and-videos/))
+        return GetListMultimed(data);
+      else return GetListLikes(data);
+    },
+    onSuccess: (response) => {
+      console.log(response);
+      setInformation(response.data);
+    },
+  });
+
   //Scrolls
   useEffect(() => {
     const handleScroll = () => {
@@ -52,6 +84,9 @@ function Profile() {
   useEffect(() => {
     info({ url: params.userNameId, accessToken: userInfo.accessToken });
   }, [isEditingUser, location]);
+  useEffect(() => {
+    obtainList(userInfo.accessToken);
+  }, [location]);
   useEffect(() => {
     setIsActive(location.pathname);
   }, [location, params.userNameId, userInfomation]);
@@ -73,7 +108,7 @@ function Profile() {
   };
 
   return (
-    <div className=" w-full h-screen z-10 min-h-[300px]">
+    <div className=" w-full h-screen z-10 min-h-[300px] overflow-y-auto">
       {/*Editing User */}
       {isEditingUser ? (
         <EditProfile
@@ -85,7 +120,7 @@ function Profile() {
         />
       ) : null}
       {/*Barra Go Back */}
-      <div className="w-full h-14 pl-5 flex items-center gap-9 sticky top-0 sm:hidden">
+      <div className="w-full h-14 pl-5 flex items-center gap-9 sticky z-50 bg-white top-0 sm:hidden">
         <Link href="/home">
           <FontAwesomeIcon icon={faArrowLeft} className="h-4 text-black" />
         </Link>
@@ -98,7 +133,7 @@ function Profile() {
       </div>
       {/*Parte superior Geston de usuario*/}
       <div
-        className={`w-full bg-white  sticky top-0 ${
+        className={`w-full bg-white  relative top-0 ${
           scroll >= 90 ? "relative" : ""
         }`}
       >
@@ -233,7 +268,28 @@ function Profile() {
         </div>
       </div>
       {/*Parte inferior paginado de tweets*/}
-      <div></div>
+      <div className="w-full h-full pb-14 sm:p-0" id="scroll-component">
+        {LoadingFunct ? (
+          <div className=" flex items-center justify-center w-full h-full">
+            <CircularProgress aria-label="Loading..." size="lg" />
+            <h1 className=" text-center text-xl">Cargando</h1>
+          </div>
+        ) : isSuccess ? (
+          information.length ? (
+            information.map((e, index) => {
+              return <Publication info={e} key={index} />;
+            })
+          ) : (
+            <div className=" flex items-center justify-center w-full h-full">
+              <h1 className=" text-center text-xl">
+                No hay tweets para mostrar
+              </h1>
+            </div>
+          )
+        ) : (
+          <h1>Error al obtener los datos</h1>
+        )}
+      </div>
     </div>
   );
 }

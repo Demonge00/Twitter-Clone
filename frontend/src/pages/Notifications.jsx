@@ -9,7 +9,7 @@ import { useUserDetails } from "../contents/UserContext";
 import { useMutation } from "@tanstack/react-query";
 import { CircularProgress } from "@nextui-org/progress";
 import Publication from "../contents/Publication";
-import { GetList } from "../api/api";
+import { GetListForYou } from "../api/api";
 import { ObtainOpacity } from "../contents/OpacityContext";
 function Notifications() {
   const { userInfo } = useUserDetails();
@@ -23,7 +23,7 @@ function Notifications() {
     const handleScroll = () => {
       const maxScroll = 300;
       const scrollY = scrollable.scrollTop;
-      const newOpacity = Math.max(1 - scrollY / maxScroll, 0.5);
+      const newOpacity = Math.max(1 - scrollY / maxScroll, 0.4);
       setOpacity(newOpacity);
     };
 
@@ -40,7 +40,7 @@ function Notifications() {
     isLoading,
     isSuccess,
   } = useMutation({
-    mutationFn: (data) => GetList(data),
+    mutationFn: (data) => GetListForYou(data),
     onSuccess: (response) => setInformation(response.data),
   });
   useEffect(() => {

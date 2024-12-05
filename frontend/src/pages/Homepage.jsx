@@ -10,21 +10,24 @@ import { ObtainOpacity } from "../contents/OpacityContext";
 import { useMutation } from "@tanstack/react-query";
 import { CircularProgress } from "@nextui-org/progress";
 import Publication from "../contents/Publication";
-import { GetList } from "../api/api";
+import { GetListForYou, GetListFollow } from "../api/api";
 
 function Homepage() {
   const { userInfo } = useUserDetails();
   const [navList, setNavList] = useState(false);
   const [isActive, setIsActive] = useState("/home");
   const [information, setInformation] = useState(null);
-  const { opacity, setOpacity } = ObtainOpacity();
-
+  const { setOpacity } = ObtainOpacity();
+  const location = useLocation();
+  {
+    /*Opacity Handle*/
+  }
   useEffect(() => {
     const scrollable = document.getElementById("scroll-component");
     const handleScroll = () => {
       const maxScroll = 300;
       const scrollY = scrollable.scrollTop;
-      const newOpacity = Math.max(1 - scrollY / maxScroll, 0.5);
+      const newOpacity = Math.max(1 - scrollY / maxScroll, 0.4);
       setOpacity(newOpacity);
     };
 
@@ -36,21 +39,29 @@ function Homepage() {
       scrollable.removeEventListener("scroll", handleScroll);
     };
   }, []);
+  {
+    /*Request*/
+  }
   const {
     mutate: obtainList,
     isLoading,
     isSuccess,
   } = useMutation({
-    mutationFn: (data) => GetList(data),
-    onSuccess: (response) => setInformation(response.data),
+    mutationFn: (data) =>
+      location.pathname.match(/para_ti/)
+        ? GetListForYou(data)
+        : GetListFollow(data),
+    onSuccess: (response) => {
+      setInformation(response.data);
+    },
   });
-  const location = useLocation();
+
   useEffect(() => {
     setIsActive(location.pathname);
   }, [location]);
   useEffect(() => {
     obtainList(userInfo.accessToken);
-  }, []);
+  }, [location]);
   return (
     <div
       className={`w-full h-full relative top-0 flex justify-between flex-col`}
@@ -114,9 +125,17 @@ function Homepage() {
             <h1 className=" text-center text-xl">Cargando</h1>
           </div>
         ) : isSuccess ? (
-          information.map((e, index) => {
-            return <Publication info={e} key={index} />;
-          })
+          information.length ? (
+            information.map((e, index) => {
+              return <Publication info={e} key={index} />;
+            })
+          ) : (
+            <div className=" flex items-center justify-center w-full h-full">
+              <h1 className=" text-center text-xl">
+                No hay tweets para mostrar
+              </h1>
+            </div>
+          )
         ) : (
           <h1>Error al obtener los datos</h1>
         )}

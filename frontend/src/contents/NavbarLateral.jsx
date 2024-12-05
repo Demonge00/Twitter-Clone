@@ -71,7 +71,7 @@ function NavbarLateral() {
           <Popover placement="bottom" showArrow>
             <PopoverTrigger>
               <Link
-                href="/search"
+                href="/search/para_ti"
                 className={`${/\/search/.test(isActive) ? "" : "text-black"}`}
               >
                 <button className=" w-14 h-14 rounded-full active:bg-gray-200">

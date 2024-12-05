@@ -32,12 +32,10 @@ function Navbar() {
         <li className="text-center w-1/6 h-full max-w-[60px]">
           <Link className=" w-4/6 h-4/6 ">
             <NavLink
-              to="/home"
-              style={({ isActive }) => {
-                return {
-                  color: isActive ? "" : "black",
-                };
-              }}
+              to="/home/para_ti"
+              className={`${
+                location.pathname.match(/home/) ? "" : "text-black"
+              }`}
             >
               <FontAwesomeIcon icon={faHouse} className=" w-full h-full " />
             </NavLink>
@@ -46,12 +44,10 @@ function Navbar() {
         <li className="text-center w-1/6 max-w-[60px]">
           <Link className=" w-1/2 h-1/2 mt-1">
             <NavLink
-              to="/search"
-              style={({ isActive }) => {
-                return {
-                  color: isActive ? "" : "black",
-                };
-              }}
+              to="/search/para_ti"
+              className={`${
+                location.pathname.match(/search/) ? "" : "text-black"
+              }`}
             >
               <FontAwesomeIcon icon={faSearch} className=" w-full h-full" />
             </NavLink>
@@ -60,12 +56,10 @@ function Navbar() {
         <li className="text-center w-1/6 max-w-[60px]">
           <Link className=" w-1/2 h-1/2 mt-1">
             <NavLink
-              to="/notifications"
-              style={({ isActive }) => {
-                return {
-                  color: isActive ? "" : "black",
-                };
-              }}
+              to="/notifications/todas"
+              className={`${
+                location.pathname.match(/notifications/) ? "" : "text-black"
+              }`}
             >
               <FontAwesomeIcon icon={faBell} className=" w-full h-full" />
             </NavLink>
@@ -113,15 +107,17 @@ function Navbar() {
             </NavLink>
           </Link>
         </li>
-        <button
-          className=" w-14 h-14 rounded-full bg-blue-500 mb-2 mr-1 absolute -top-[4.5rem] right-5 active:bg-black opacity-100"
-          onClick={() => setIsPosting(true)}
-        >
-          <FontAwesomeIcon
-            icon={faPen}
-            className=" h-8 w-8 text-white rotate-[270deg] opacity-100"
-          ></FontAwesomeIcon>
-        </button>
+        {location.pathname.match(/home/) ? (
+          <button
+            className=" w-14 h-14 rounded-full bg-blue-500 mb-2 mr-1 absolute -top-[4.5rem] right-5 active:bg-black opacity-100"
+            onClick={() => setIsPosting(true)}
+          >
+            <FontAwesomeIcon
+              icon={faPen}
+              className=" h-8 w-8 text-white rotate-[270deg] opacity-100"
+            ></FontAwesomeIcon>
+          </button>
+        ) : null}
       </ul>
       {/*Posteador*/}
       {isPosting ? (

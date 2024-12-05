@@ -104,3 +104,9 @@ class Publication(models.Model):
     views = models.IntegerField(default=0)
     publication_pick = models.ImageField(
         upload_to=upload_path_pub, blank=True, null=True)
+
+    def __str__(self):
+        return self.id
+
+    def likes(self):
+        return self.likers.count()
