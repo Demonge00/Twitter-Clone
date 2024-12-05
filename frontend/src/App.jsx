@@ -7,11 +7,11 @@ import RegisterPage from "./pages/RegisterPage";
 import RecoverPasswordPage from "./pages/RecoverPasswordPage";
 import NewPasswordPage from "./pages/NewPasswordPage";
 import VerificationPage from "./pages/VerificationPage";
-
 import { UserDetailsProvider } from "./contents/UserContext";
 
 function App() {
   const navigate = useNavigate();
+
   return (
     <UserDetailsProvider>
       <NextUIProvider navigate={navigate}>

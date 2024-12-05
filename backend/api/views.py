@@ -1,10 +1,11 @@
+import datetime
 import os
 import sys
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view, authentication_classes
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
@@ -18,7 +19,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import BasePermission
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from api.serialisers import UserSerializer
+from api.serialisers import UserSerializer, PubInformationSerializer
 
 User = get_user_model()
 
@@ -35,9 +36,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['name'] = user.name
         token['name_id'] = user.name_id
-        pick = user.profile_pick.name.split('\\')[
-            6:]
-        token['profile_pick'] = '/'.join(pick)
+        pick = user.profile_pick.url
+        token['profile_pick'] = pick
         return token
 
 
@@ -74,7 +74,7 @@ class UserList(APIView):
             if followed is not None:
                 response['followed'] = followed
             return Response(response, status=status.HTTP_200_OK)
-        except:
+        except Exception as e:
             return Response({'message': 'Ususario no existe'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
@@ -159,9 +159,8 @@ class UserList(APIView):
         access_token = RefreshToken.for_user(user)
         access_token['name'] = user.name
         access_token['name_id'] = user.name_id
-        pick = user.profile_pick.name.split('\\')[
-            6:]
-        access_token['profile_pick'] = '/'.join(pick)
+        pick = user.profile_pick.url
+        access_token['profile_pick'] = pick
         return Response({'access': str(access_token.access_token),
                         'refresh': str(access_token)}, status=status.HTTP_200_OK)
 
@@ -177,7 +176,7 @@ class PasswordRecoverList(APIView):
             print(f"Porfavor ve a <a href='http://localhost:5173/recover-password/{
                   password_secret}'>este link</a> para vambiar tu contraseña.")
             return Response({'message': 'Password recuperado'}, status=status.HTTP_200_OK)
-        except:
+        except Exception as e:
             return Response({'message': 'Email no existe'}, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, password_secret=None, format=None):
@@ -186,7 +185,7 @@ class PasswordRecoverList(APIView):
             user.password = make_password(request.data['password'])
             user.save()
             return Response(status=status.HTTP_200_OK)
-        except:
+        except Exception as e:
             return Response({'message': 'Error'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -198,7 +197,7 @@ def VerifyUser(request, verification_secret):
         user.is_active = True
         user.save()
         return Response({'message': 'user_registered'}, status=status.HTTP_200_OK)
-    except:
+    except Exception as e:
         return Response({'message': 'Unable to verify email'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -221,13 +220,114 @@ class FollowList(APIView):
             user.save()
 
             return Response({'message': 'Relation Created', 'followed': answer}, status=status.HTTP_200_OK)
-        except:
+        except Exception as e:
             return Response({'message': 'Unable to relate'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class PostingView(APIView):
+class Commenter(APIView):
 
     permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            user = User.objects.get(id=request.user.id)
+            followed_user = User.objects.get(name_id=request.data['name_id'])
+            follow_unfollow = request.data['follow']
+            if follow_unfollow is False:
+                user.follow.add(followed_user)
+                answer = True
+            else:
+                print('asfasf')
+                user.follow.remove(followed_user)
+                answer = False
+            user.save()
+
+            return Response({'message': 'Relation Created', 'followed': answer}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': 'Unable to relate'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Liker(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            user = User.objects.get(id=request.user.id)
+            liked_publication = Publication.objects.get(
+                id=request.data['pub_id'])
+            liked = request.data['liked']
+            if liked is False:
+                user.likes.add(liked_publication)
+            else:
+                print('asfasf')
+                user.likes.remove(liked_publication)
+            user.save()
+            return Response({'message': 'Relation Created', 'is_liked': liked}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': 'Unable to relate'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ReTweeter(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            user = User.objects.get(id=request.user.id)
+            retweeted_publication = Publication.objects.get(
+                id=request.data['pub_id'])
+            retweeted = request.data['retweeted']
+            if retweeted is False:
+                user.retweets.add(retweeted_publication)
+            else:
+                print('asfasf')
+                user.retweets.remove(retweeted_publication)
+            user.save()
+
+            return Response({'message': 'Relation Created', 'is_retweet': retweeted}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': 'Unable to relate'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Bookmarker(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            user = User.objects.get(id=request.user.id)
+            bookmarked_publication = Publication.objects.get(
+                id=request.data['pub_id'])
+            bookmarked = request.data['bookmarked']
+            if bookmarked is False:
+                user.bookmarks.add(bookmarked_publication)
+            else:
+                print('asfasf')
+                user.bookmarks.remove(bookmarked_publication)
+            user.save()
+
+            return Response({'message': 'Relation Created', 'is_bookmarked': bookmarked}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': 'Unable to relate'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PostsView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pub_id=None):
+        if (pub_id):
+            try:
+                user = User.objects.get(id=request.user.id)
+                publication = Publication.objects.get(id=pub_id)
+                print('asdas')
+                serializer = PubInformationSerializer(
+                    publication, context={'owner': user})
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except:
+                return Response({'asfasf': 'asdasd'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
         if 'text' in request.POST and 'privacity' in request.POST:
@@ -238,7 +338,7 @@ class PostingView(APIView):
                 privacity = request.POST.get('privacity')
 
                 pub = Publication(
-                    creator=creator, message=text, is_private=privacity)
+                    creator=creator, text=text, is_private=privacity)
                 if "bg_image" in request.FILES:
                     picture = request.FILES.get('bg_image')
                     file_name = picture.name
@@ -253,3 +353,17 @@ class PostingView(APIView):
             except:
                 return Response({'message': 'Unable to create'}, status=status.HTTP_400_BAD_REQUEST)
         return Response({'message': 'Unable to post'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def GetTweetsList(request):
+    try:
+        user = User.objects.get(id=request.user.id)
+        publication_list = Publication.objects.filter(
+            creator__in=user.follow.all()).order_by('-creation_date')[:20]
+        serializer = PubInformationSerializer(
+            publication_list, context={'owner': user}, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

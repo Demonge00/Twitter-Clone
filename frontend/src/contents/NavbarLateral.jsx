@@ -252,7 +252,7 @@ function NavbarLateral() {
           <Popover placement="top-start" showArrow>
             <PopoverTrigger>
               <Avatar
-                src={`http://localhost:8000/feather/${userInfo.profile_pick}`}
+                src={`http://localhost:8000/feather${userInfo.profile_pick}`}
                 className=" mb-6 mr-2"
               />
             </PopoverTrigger>

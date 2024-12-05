@@ -33,14 +33,14 @@ class CustomUserAdmin(UserAdmin):
 
 
 class PublicationAdmin(admin.ModelAdmin):
-    list_display = ('creator', "message", 'id', "is_private")
-    list_filter = ('creator', "message", 'id', "is_private")
+    list_display = ('creator', "text", 'id', "is_private")
+    list_filter = ('creator', "text", 'id', "is_private")
     fieldsets = (
-        (None, {"fields": ('creator', "message", "is_private", "publication_pick")}),)
+        (None, {"fields": ('creator', "text", "is_private", "publication_pick",)}),)
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": ('creator', "message", "is_private", "publication_pick")}
+            "fields": ('creator', "text", "is_private", "publication_pick")}
          ),
     )
 

@@ -17,6 +17,11 @@ urlpatterns = [
     re_path('password/(?P<password_secret>\S+)?/?$',
             views.PasswordRecoverList.as_view(), name='recover_password'),
     path('follow/', views.FollowList.as_view(), name='follow_management'),
-    path('post/', views.PostingView.as_view(), name='posting_management'),
+    re_path('post/(?P<pub_id>\d+)?/?$',
+            views.PostsView.as_view(), name='posting_management'),
+    path('post/list', views.GetTweetsList, name='tweet-list'),
+    path('post/like', views.Liker.as_view(), name='tweet-like'),
+    path('post/retweet', views.ReTweeter.as_view(), name='tweet-retweet'),
+    path('post/bookmark', views.Bookmarker.as_view(), name='tweet-bookmarked'),
     path('security/', views.Protection.as_view(), name='posting_management'),
-] + static('/media/', document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

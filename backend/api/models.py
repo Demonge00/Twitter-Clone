@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
@@ -87,7 +88,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class Publication(models.Model):
     creator = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="publications")
-    message = models.TextField(max_length=300)
+    text = models.TextField(max_length=300)
     creation_date = models.DateTimeField(default=timezone.now)
     likers = models.ManyToManyField(CustomUser, related_name="likes")
     response_of = models.ForeignKey(
@@ -97,6 +98,8 @@ class Publication(models.Model):
     looked_by = models.ManyToManyField(CustomUser, related_name="Pub_looks")
     bookmarked_by = models.ManyToManyField(
         CustomUser, related_name="bookmarks")
+    commented_by = models.ManyToManyField(
+        CustomUser, related_name="comments")
     is_private = models.BooleanField(default=False)
     views = models.IntegerField(default=0)
     publication_pick = models.ImageField(

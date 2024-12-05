@@ -12,17 +12,23 @@ import { Link } from "@nextui-org/link";
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import PostPublication from "./PostPublication";
+import { ObtainOpacity } from "./OpacityContext";
 
 function Navbar() {
   const [isPosting, setIsPosting] = useState(false);
+  const { opacity } = ObtainOpacity();
+
   const location = useLocation();
   if (location.pathname.match(/profile/)) {
     return null;
   }
   return (
-    <div>
+    <div className="h-screen absolute">
       {/* Navbar inferior */}
-      <ul className=" absolute bottom-0  w-screen flex justify-between h-14 border-t pt-4 sm:hidden z-50 bg-white">
+      <ul
+        className=" absolute bottom-0  w-screen flex justify-between h-14 border-t pt-4 sm:hidden z-50 bg-white"
+        style={{ opacity: opacity }}
+      >
         <li className="text-center w-1/6 h-full max-w-[60px]">
           <Link className=" w-4/6 h-4/6 ">
             <NavLink
@@ -108,12 +114,12 @@ function Navbar() {
           </Link>
         </li>
         <button
-          className=" w-14 h-14 rounded-full bg-blue-500 mb-2 mr-1 absolute -top-[4.5rem] right-5 active:bg-black"
+          className=" w-14 h-14 rounded-full bg-blue-500 mb-2 mr-1 absolute -top-[4.5rem] right-5 active:bg-black opacity-100"
           onClick={() => setIsPosting(true)}
         >
           <FontAwesomeIcon
             icon={faPen}
-            className=" h-8 w-8 text-white rotate-[270deg]"
+            className=" h-8 w-8 text-white rotate-[270deg] opacity-100"
           ></FontAwesomeIcon>
         </button>
       </ul>

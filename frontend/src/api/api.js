@@ -70,3 +70,39 @@ export const Security = (data) => {
 export const TryRefreshToken = (data) => {
   return login.post("feather/token/refresh/", data);
 };
+
+export const GetList = (data) => {
+  return login.get("feather/post/list", {
+    headers: {
+      Authorization: "Bearer " + data,
+    },
+  });
+};
+export const GetPostInfo = (data) => {
+  return login.get("feather/post/" + data.pub_id, {
+    headers: {
+      Authorization: "Bearer " + data.accessToken,
+    },
+  });
+};
+export const ChangeLike = (data) => {
+  return login.post("feather/post/like", data.data, {
+    headers: {
+      Authorization: "Bearer " + data.accessToken,
+    },
+  });
+};
+export const ChangeRetweet = (data) => {
+  return login.post("feather/post/retweet", data.data, {
+    headers: {
+      Authorization: "Bearer " + data.accessToken,
+    },
+  });
+};
+export const ChangeBookmark = (data) => {
+  return login.post("feather/post/bookmark", data.data, {
+    headers: {
+      Authorization: "Bearer " + data.accessToken,
+    },
+  });
+};
