@@ -107,30 +107,30 @@ export const GetListBookmarked = (data) => {
   });
 };
 export const GetListPosts = (data) => {
-  return login.get("feather/post/list/posts", {
+  return login.post("feather/post/list/posts", data, {
     headers: {
-      Authorization: "Bearer " + data,
+      Authorization: "Bearer " + data.accessToken,
     },
   });
 };
 export const GetListResponses = (data) => {
-  return login.get("feather/post/list/responses", {
+  return login.post("feather/post/list/responses", data, {
     headers: {
-      Authorization: "Bearer " + data,
+      Authorization: "Bearer " + data.accessToken,
     },
   });
 };
 export const GetListLikes = (data) => {
-  return login.get("feather/post/list/likes", {
+  return login.post("feather/post/list/likes", data, {
     headers: {
-      Authorization: "Bearer " + data,
+      Authorization: "Bearer " + data.accessToken,
     },
   });
 };
 export const GetListMultimed = (data) => {
-  return login.get("feather/post/list/multimedia", {
+  return login.post("feather/post/list/multimedia", data, {
     headers: {
-      Authorization: "Bearer " + data,
+      Authorization: "Bearer " + data.accessToken,
     },
   });
 };

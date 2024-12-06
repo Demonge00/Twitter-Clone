@@ -85,7 +85,10 @@ function Profile() {
     info({ url: params.userNameId, accessToken: userInfo.accessToken });
   }, [isEditingUser, location]);
   useEffect(() => {
-    obtainList(userInfo.accessToken);
+    obtainList({
+      accessToken: userInfo.accessToken,
+      name_id: params.userNameId,
+    });
   }, [location]);
   useEffect(() => {
     setIsActive(location.pathname);

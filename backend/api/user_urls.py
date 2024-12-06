@@ -19,7 +19,7 @@ urlpatterns = [
     path('follow/', views.FollowList.as_view(), name='follow_management'),
     re_path('post/(?P<pub_id>\d+)?/?$',
             views.PostsView.as_view(), name='posting_management'),
-    path('post/list/<list_type>', views.GetTweetsList, name='tweet-list'),
+    path('post/list/<list_type>', views.GetTweetsList.as_view(), name='tweet-list'),
     path('post/like', views.Liker.as_view(), name='tweet-like'),
     path('post/retweet', views.ReTweeter.as_view(), name='tweet-retweet'),
     path('post/bookmark', views.Bookmarker.as_view(), name='tweet-bookmarked'),

@@ -46,6 +46,9 @@ class PubInformationSerializer(serializers.ModelSerializer):
         representation['name_id'] = instance.creator.name_id
 
         # Conditionals
+        if self.context['owner'] in instance.retweeters.all() and self.context['owner'] != instance.creator:
+            representation['reetweet_from'] = self.context['owner'].name
+        print('asfasf')
         if self.context['owner'] in instance.likers.all():
             representation['is_liked'] = True
         else:

@@ -357,108 +357,110 @@ class PostsView(APIView):
         return Response({'message': 'Unable to post'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def GetTweetsList(request, list_type):
+class GetTweetsList(APIView):
 
-    if list_type == 'follows':
-        try:
+    permission_classes = [IsAuthenticated]
 
-            user = User.objects.get(id=request.user.id)
-            publication_list = Publication.objects.filter(
-                creator__in=user.follow.all()).order_by('-creation_date')[:20]
-            Publication.objects.filter(
-                id__in=[pub.id for pub in publication_list]).update(views=F('views') + 1)
-            serializer = PubInformationSerializer(
-                publication_list, context={'owner': user}, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    if list_type == 'for_you':
-        try:
-            user = User.objects.get(id=request.user.id)
-            publication_list = Publication.objects.filter(
-                Q(likers__in=user.follow.all()) | Q(creator__in=user.follow.all())).exclude(creator=user).distinct().order_by('-creation_date')[:20]
-            Publication.objects.filter(
-                id__in=[pub.id for pub in publication_list]).update(views=F('views') + 1)
-            serializer = PubInformationSerializer(
-                publication_list, context={'owner': user}, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    if list_type == 'for_you_all':
-        try:
-            user = User.objects.get(id=request.user.id)
-            publication_list = Publication.objects.all().order_by(
-                '-creation_date')[:20]
-            Publication.objects.filter(
-                id__in=[pub.id for pub in publication_list]).update(views=F('views') + 1)
-            serializer = PubInformationSerializer(
-                publication_list, context={'owner': user}, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    if list_type == 'tendences':
-        try:
-            user = User.objects.get(id=request.user.id)
-            publication_list = Publication.objects.annotate(likes=Count('likers')).order_by('-likes', '-views')[
-                :20]
-            Publication.objects.filter(
-                id__in=[pub.id for pub in publication_list]).update(views=F('views') + 1)
-            serializer = PubInformationSerializer(
-                publication_list, context={'owner': user}, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    if list_type == 'bookmarks':
-        try:
-            user = User.objects.get(id=request.user.id)
-            publication_list = user.bookmarks.all().order_by('-creation_date')[
-                :20]
-            serializer = PubInformationSerializer(
-                publication_list, context={'owner': user}, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    if list_type == 'posts':
-        try:
-            user = User.objects.get(id=request.user.id)
-            publication_list = Publication.objects.filter(
-                Q(creator=user) | Q(id__in=user.retweets.all()), response_of=None).distinct().order_by('-creation_date')[:20]
-            serializer = PubInformationSerializer(
-                publication_list, context={'owner': user}, many=True)
-            print(serializer.data)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    if list_type == 'responses':
-        try:
-            user = User.objects.get(id=request.user.id)
-            publication_list = Publication.objects.filter(
-                creator=user).order_by('-creation_date')[:20]
-            serializer = PubInformationSerializer(
-                publication_list, context={'owner': user}, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    if list_type == 'multimedia':
-        try:
-            user = User.objects.get(id=request.user.id)
-            publication_list = Publication.objects.filter(
-                Q(creator=user), Q(publication_pick__isnull=False), ~Q(publication_pick='')).order_by('-creation_date')[:20]
-            serializer = PubInformationSerializer(
-                publication_list, context={'owner': user}, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    if list_type == 'likes':
-        try:
-            user = User.objects.get(id=request.user.id)
-            publication_list = user.likes.all().order_by('-creation_date')[:20]
-            serializer = PubInformationSerializer(
-                publication_list, context={'owner': user}, many=True)
-            print(serializer.data)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    return Response(status=status.HTTP_403_FORBIDDEN)
+    def get(self, request, list_type=None):
+        if list_type == 'follows':
+            try:
+
+                user = User.objects.get(id=request.user.id)
+                publication_list = Publication.objects.filter(
+                    Q(creator__in=user.follow.all()) | Q(retweeters__in=user.follow.all())).exclude(creator=user).order_by('-creation_date')[:20]
+                Publication.objects.filter(
+                    id__in=[pub.id for pub in publication_list]).update(views=F('views') + 1)
+                serializer = PubInformationSerializer(
+                    publication_list, context={'owner': user}, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        if list_type == 'for_you':
+            try:
+                user = User.objects.get(id=request.user.id)
+                publication_list = Publication.objects.filter(
+                    Q(likers__in=user.follow.all()) | Q(creator__in=user.follow.all()) | Q(retweeters__in=user.follow.all())).exclude(creator=user).distinct().order_by('-creation_date')[:20]
+                Publication.objects.filter(
+                    id__in=[pub.id for pub in publication_list]).update(views=F('views') + 1)
+                serializer = PubInformationSerializer(
+                    publication_list, context={'owner': user}, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        if list_type == 'for_you_all':
+            try:
+                user = User.objects.get(id=request.user.id)
+                publication_list = Publication.objects.all().order_by(
+                    '-creation_date')[:20]
+                Publication.objects.filter(
+                    id__in=[pub.id for pub in publication_list]).update(views=F('views') + 1)
+                serializer = PubInformationSerializer(
+                    publication_list, context={'owner': user}, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        if list_type == 'tendences':
+            try:
+                user = User.objects.get(id=request.user.id)
+                publication_list = Publication.objects.annotate(likes=Count('likers')).order_by('-likes', '-views')[
+                    :20]
+                Publication.objects.filter(
+                    id__in=[pub.id for pub in publication_list]).update(views=F('views') + 1)
+                serializer = PubInformationSerializer(
+                    publication_list, context={'owner': user}, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        if list_type == 'bookmarks':
+            try:
+                user = User.objects.get(id=request.user.id)
+                publication_list = user.bookmarks.all().order_by('-creation_date')[
+                    :20]
+                serializer = PubInformationSerializer(
+                    publication_list, context={'owner': user}, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def post(self, request, list_type=None):
+        if list_type == 'posts':
+            try:
+                user = User.objects.get(name_id=request.data['name_id'])
+                publication_list = Publication.objects.filter(
+                    Q(creator=user) | Q(id__in=user.retweets.all()), response_of=None).distinct().order_by('-creation_date')[:20]
+                serializer = PubInformationSerializer(
+                    publication_list, context={'owner': user}, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        if list_type == 'responses':
+            try:
+                user = User.objects.get(name_id=request.data['name_id'])
+                publication_list = Publication.objects.filter(
+                    creator=user).order_by('-creation_date')[:20]
+                serializer = PubInformationSerializer(
+                    publication_list, context={'owner': user}, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        if list_type == 'multimedia':
+            try:
+                user = User.objects.get(name_id=request.data['name_id'])
+                publication_list = Publication.objects.filter(
+                    Q(creator=user), Q(publication_pick__isnull=False), ~Q(publication_pick='')).order_by('-creation_date')[:20]
+                serializer = PubInformationSerializer(
+                    publication_list, context={'owner': user}, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        if list_type == 'likes':
+            try:
+                user = User.objects.get(name_id=request.data['name_id'])
+                publication_list = user.likes.all().order_by(
+                    '-creation_date')[:20]
+                serializer = PubInformationSerializer(
+                    publication_list, context={'owner': user}, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
