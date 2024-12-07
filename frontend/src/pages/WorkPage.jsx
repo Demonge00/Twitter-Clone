@@ -74,7 +74,12 @@ function WorkPage() {
             <Route path="/settings"></Route>
           </Routes>
         </div>
-        <div className=" bg-black"></div>
+        <div className=" border rounded-lg">
+          <div className=" h-12 w-full bg-gray-100 text-center flex justify-center items-center">
+            <p className=" text-2xl">Mensajes</p>
+          </div>
+        </div>
+        <div className="bg-green-400"></div>
       </OpacityContext>
     </div>
   );

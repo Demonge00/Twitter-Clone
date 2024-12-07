@@ -61,7 +61,6 @@ function Profile() {
       else return GetListLikes(data);
     },
     onSuccess: (response) => {
-      console.log(response);
       setInformation(response.data);
     },
   });

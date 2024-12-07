@@ -23,7 +23,7 @@ import {
   ChangeBookmark,
 } from "../api/api";
 import PostResponse from "./PostResponse";
-function Publication({ info }) {
+function Publication({ info, response_mod = true, commentPost }) {
   const { userInfo } = useUserDetails();
   const [publicationInfo, setPublicationInfo] = useState({ ...info });
   const [is_commenting, setIsCommenting] = useState(false);
@@ -39,6 +39,7 @@ function Publication({ info }) {
     }).then((response) => {
       setPublicationInfo(response.data);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresher]);
   const handleLike = () => {
     if (!publicationInfo.is_private)
@@ -90,13 +91,20 @@ function Publication({ info }) {
       });
   };
   return (
-    <div className={`w-full min-h-12 ${info.is_commenting ? "" : "border-b"}`}>
+    <div className={`w-full min-h-12 ${commentPost ? "" : "border-b"}`}>
+      {info.response_of && response_mod ? (
+        <Publication
+          info={{ ...info.response_of }}
+          response_mod={false}
+          commentPost={true}
+        />
+      ) : null}
       {location.pathname.match(/post/) && reetweet_from != null ? (
         <h1 className="text-sm flex gap-3 text-gray-500 mt-1 items-center">
           <FontAwesomeIcon icon={faRetweet} className={`h-4 pl-10`} />
           {reetweet_from != userInfo.name
-            ? `Reetweeteado por ${reetweet_from}`
-            : "Reetweeteaste"}
+            ? `Retweeteado por ${reetweet_from}`
+            : "Retweeteaste"}
         </h1>
       ) : null}
       {/*TextArea*/}
@@ -108,7 +116,7 @@ function Publication({ info }) {
             src={`http://localhost:8000/feather${publicationInfo.avatar}`}
             className="h-12 w-12 ml-1 sm:h-14 sm:min-w-14 sm:min-h-14 top-1 ring-4 ring-white sm:max-w-1/4"
           ></Avatar>
-          {info.is_commenting ? (
+          {commentPost ? (
             <div className="h-[85%] w-0.5 bg-gray-500"></div>
           ) : null}
         </div>
@@ -188,7 +196,8 @@ function Publication({ info }) {
       {is_commenting ? (
         <PostResponse
           setIsCommentingProp={setIsCommenting}
-          info={{ ...publicationInfo, is_commenting: true }}
+          info={{ ...publicationInfo }}
+          commentPost={true}
         />
       ) : null}
     </div>

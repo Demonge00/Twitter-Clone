@@ -227,29 +227,6 @@ class FollowList(APIView):
             return Response({'message': 'Unable to relate'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class Commenter(APIView):
-
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        try:
-            user = User.objects.get(id=request.user.id)
-            followed_user = User.objects.get(name_id=request.data['name_id'])
-            follow_unfollow = request.data['follow']
-            if follow_unfollow is False:
-                user.follow.add(followed_user)
-                answer = True
-            else:
-
-                user.follow.remove(followed_user)
-                answer = False
-            user.save()
-
-            return Response({'message': 'Relation Created', 'followed': answer}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'message': 'Unable to relate'}, status=status.HTTP_400_BAD_REQUEST)
-
-
 class Liker(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -350,7 +327,14 @@ class PostsView(APIView):
                         pub.publication_pick = file_path
                     else:
                         pub.publication_pick = picture
+                if "response_of" in request.POST:
+                    response_of = Publication.objects.get(
+                        id=request.POST.get('response_of'))
+                    pub.response_of = response_of
+                    response_of.commented_by.add(creator)
+                    response_of.save()
                 pub.save()
+                print(pub.id)
                 return Response({'message': 'Publication Created'}, status=status.HTTP_200_OK)
             except:
                 return Response({'message': 'Unable to create'}, status=status.HTTP_400_BAD_REQUEST)
@@ -457,7 +441,7 @@ class GetTweetsList(APIView):
         if list_type == 'likes':
             try:
                 user = User.objects.get(name_id=request.data['name_id'])
-                publication_list = user.likes.all().order_by(
+                publication_list = user.likes.filter(response_of=None).order_by(
                     '-creation_date')[:20]
                 serializer = PubInformationSerializer(
                     publication_list, context={'owner': user}, many=True)

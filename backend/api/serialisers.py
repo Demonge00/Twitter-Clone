@@ -17,11 +17,12 @@ class UserSerializer(serializers.ModelSerializer):
 class PubInformationSerializer(serializers.ModelSerializer):
     time_elapsed = serializers.SerializerMethodField(read_only=True)
     pub_id = serializers.IntegerField(source='id')
+    response_of = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Publication
-        fields = ['text', 'is_private', 'views',
-                  'publication_pick', 'time_elapsed', 'pub_id']
+        fields = ['text', 'views',
+                  'publication_pick', 'time_elapsed', 'pub_id', 'response_of']
 
     def get_time_elapsed(self, obj):
         time = timezone.now() - obj.creation_date
@@ -36,6 +37,19 @@ class PubInformationSerializer(serializers.ModelSerializer):
         else:
             return str(time.seconds) + 's'
 
+    def get_response_of(self, obj):
+        if obj.response_of:
+            try:
+                pub = Publication.objects.get(id=obj.response_of.id)
+                serialized = PubInformationSerializer(
+                    pub,
+                    context={**self.context}
+                )
+                return serialized.data
+            except Publication.DoesNotExist:
+                return None
+        return None
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['likes'] = instance.likers.count()
@@ -48,7 +62,10 @@ class PubInformationSerializer(serializers.ModelSerializer):
         # Conditionals
         if self.context['owner'] in instance.retweeters.all() and self.context['owner'] != instance.creator:
             representation['reetweet_from'] = self.context['owner'].name
-        print('asfasf')
+        if self.context['owner'] in instance.creator.follow.all() or instance.is_private is False or self.context['owner'] == instance.creator:
+            representation['is_private'] = False
+        else:
+            representation['is_private'] = True
         if self.context['owner'] in instance.likers.all():
             representation['is_liked'] = True
         else:
