@@ -110,7 +110,7 @@ function Profile() {
   };
 
   return (
-    <div className=" w-full h-screen z-10 min-h-[300px] overflow-y-auto">
+    <div className=" w-full h-screen z-10 min-h-[300px] overflow-y-auto scrollbar-hide">
       {/*Editing User */}
       {isEditingUser ? (
         <EditProfile
@@ -279,7 +279,8 @@ function Profile() {
         ) : isSuccess ? (
           information.length ? (
             information.map((e, index) => {
-              return <Publication info={e} key={index} />;
+              console.log(e);
+              return <Publication info={e} key={index} commentPost={false} />;
             })
           ) : (
             <div className=" flex items-center justify-center w-full h-full">
