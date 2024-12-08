@@ -279,7 +279,8 @@ function Profile() {
         ) : isSuccess ? (
           information.length ? (
             information.map((e, index) => {
-              return <Publication info={e} key={index} />;
+              console.log(e);
+              return <Publication info={e} key={index} commentPost={false} />;
             })
           ) : (
             <div className=" flex items-center justify-center w-full h-full">

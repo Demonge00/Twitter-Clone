@@ -412,7 +412,7 @@ class GetTweetsList(APIView):
             try:
                 user = User.objects.get(name_id=request.data['name_id'])
                 publication_list = Publication.objects.filter(
-                    Q(creator=user) | Q(id__in=user.retweets.all()), response_of=None).distinct().order_by('-creation_date')[:20]
+                    Q(creator=user, response_of=None) | Q(id__in=user.retweets.all())).distinct().order_by('-creation_date')[:20]
                 serializer = PubInformationSerializer(
                     publication_list, context={'owner': user}, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -443,6 +443,18 @@ class GetTweetsList(APIView):
                 user = User.objects.get(name_id=request.data['name_id'])
                 publication_list = user.likes.filter(response_of=None).order_by(
                     '-creation_date')[:20]
+                serializer = PubInformationSerializer(
+                    publication_list, context={'owner': user}, many=True)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        if list_type == 'tweet-responses':
+            try:
+                user = request.user
+                pub = Publication.objects.get(id=request.data['pub_id'])
+                publication_list = Publication.objects.annotate(likes=Count('likers')).filter(id__in=pub.responses.all()).order_by('-likes', '-views')[
+                    :20]
                 serializer = PubInformationSerializer(
                     publication_list, context={'owner': user}, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)

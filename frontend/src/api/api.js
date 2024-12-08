@@ -70,7 +70,6 @@ export const Security = (data) => {
 export const TryRefreshToken = (data) => {
   return login.post("feather/token/refresh/", data);
 };
-
 export const GetListForYou = (data) => {
   return login.get("feather/post/list/for_you", {
     headers: {
@@ -115,6 +114,13 @@ export const GetListPosts = (data) => {
 };
 export const GetListResponses = (data) => {
   return login.post("feather/post/list/responses", data, {
+    headers: {
+      Authorization: "Bearer " + data.accessToken,
+    },
+  });
+};
+export const GetTweetResponses = (data) => {
+  return login.post("feather/post/list/tweet-responses", data, {
     headers: {
       Authorization: "Bearer " + data.accessToken,
     },

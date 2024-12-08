@@ -6,6 +6,7 @@ import {
   faComment as CommentFill,
   faHeart as heartFilled,
 } from "@fortawesome/free-solid-svg-icons";
+
 import {
   faComment,
   faBookmark,
@@ -16,6 +17,7 @@ import { Avatar } from "@nextui-org/avatar";
 import { useEffect, useState } from "react";
 import { useUserDetails } from "./UserContext";
 import { Link } from "@nextui-org/link";
+import { Link as LinkG } from "react-router-dom";
 import {
   GetPostInfo,
   ChangeLike,
@@ -23,7 +25,12 @@ import {
   ChangeBookmark,
 } from "../api/api";
 import PostResponse from "./PostResponse";
-function Publication({ info, response_mod = true, commentPost }) {
+function Publication({
+  info,
+  response_mod = true,
+  commentPost,
+  showResponseOf = false,
+}) {
   const { userInfo } = useUserDetails();
   const [publicationInfo, setPublicationInfo] = useState({ ...info });
   const [is_commenting, setIsCommenting] = useState(false);
@@ -91,13 +98,9 @@ function Publication({ info, response_mod = true, commentPost }) {
       });
   };
   return (
-    <div className={`w-full min-h-12 ${commentPost ? "" : "border-b"}`}>
+    <div className={`w-full min-h-12 ${commentPost ? "" : "border-b"} `}>
       {info.response_of && response_mod ? (
-        <Publication
-          info={{ ...info.response_of }}
-          response_mod={false}
-          commentPost={true}
-        />
+        <Publication info={{ ...info.response_of }} commentPost={true} />
       ) : null}
       {location.pathname.match(/post/) && reetweet_from != null ? (
         <h1 className="text-sm flex gap-3 text-gray-500 mt-1 items-center">
@@ -107,22 +110,32 @@ function Publication({ info, response_mod = true, commentPost }) {
             : "Retweeteaste"}
         </h1>
       ) : null}
+      {showResponseOf ? (
+        <h1 className="text-sm sm:text-base flex gap-3 text-gray-500 mt-1 items-center">
+          <FontAwesomeIcon icon={faComment} className={`h-4 pl-10`} />
+          En respuesta a {info.response_of.name}
+        </h1>
+      ) : null}
       {/*TextArea*/}
-      <div className="flex w-full justify-start gap-2">
+
+      <LinkG
+        className="flex w-full justify-start gap-2 hover:bg-gray-100 cursor-pointer z-10"
+        to={`/publication/${publicationInfo.pub_id}`}
+      >
         <div className="flex flex-col w-auto mt-1 ml-1 items-center">
           <Avatar
             as={Link}
             href={`/profile/${publicationInfo.name_id}/post`}
             src={`http://localhost:8000/feather${publicationInfo.avatar}`}
-            className="h-12 w-12 ml-1 sm:h-14 sm:min-w-14 sm:min-h-14 top-1 ring-4 ring-white sm:max-w-1/4"
+            className="h-12 w-12 ml-1 sm:h-14 sm:w-14 ring-4 ring-white sm:max-w-1/4"
           ></Avatar>
           {commentPost ? (
-            <div className="h-[85%] w-0.5 bg-gray-500"></div>
+            <div className="flex-grow ml-1 w-0.5 bg-gray-500"></div>
           ) : null}
         </div>
 
         <div className="flex flex-col w-full mt-1 max-w-[80%] sm:max-w-[85%]">
-          <div className="flex flex-wrap gap-1 justify-start ">
+          <div className="flex gap-1 justify-start text-sm max-[370px]:text-xs items-center sm:text-base">
             <h1 className="font-bold text-base">{publicationInfo.name}</h1>
             <p className="text-gray-400">@{publicationInfo.name_id}</p>
             <h1 className="text-gray-400"> - {publicationInfo.time_elapsed}</h1>
@@ -137,11 +150,15 @@ function Publication({ info, response_mod = true, commentPost }) {
             </div>
           ) : null}
           {/*Barra de inserts*/}
-          <div className="w-full flex flex-col justify-evenly items-center z-30 flex-wrap bg-white text-gray-500">
+          <div className="w-full flex flex-col justify-evenly items-center z-30 flex-wrap text-gray-500">
             <div className="flex gap-1 justify-evenly items-center w-full py-2">
               <button
                 className="py-1 text-xs flex items-center justify-center gap-0.5"
-                onClick={() => setIsCommenting(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsCommenting(true);
+                }}
               >
                 {publicationInfo.comments}
                 <FontAwesomeIcon
@@ -151,7 +168,11 @@ function Publication({ info, response_mod = true, commentPost }) {
               </button>
               <button
                 className="py-1 text-xs flex items-center justify-center gap-1"
-                onClick={handleLike}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleLike();
+                }}
               >
                 {publicationInfo.likes}
                 <FontAwesomeIcon
@@ -161,7 +182,11 @@ function Publication({ info, response_mod = true, commentPost }) {
               </button>
               <button
                 className="py-1 text-xs flex items-center justify-center gap-1"
-                onClick={handleRetweet}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleRetweet();
+                }}
               >
                 {publicationInfo.retweets}
                 <FontAwesomeIcon
@@ -180,7 +205,11 @@ function Publication({ info, response_mod = true, commentPost }) {
               </text>
               <button
                 className="py-1 ml-8 text-xs flex items-center justify-center gap-1"
-                onClick={handleBookmark}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleBookmark();
+                }}
               >
                 <FontAwesomeIcon
                   icon={
@@ -192,7 +221,7 @@ function Publication({ info, response_mod = true, commentPost }) {
             </div>
           </div>
         </div>
-      </div>
+      </LinkG>
       {is_commenting ? (
         <PostResponse
           setIsCommentingProp={setIsCommenting}
