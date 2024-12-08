@@ -110,7 +110,7 @@ function Profile() {
   };
 
   return (
-    <div className=" w-full h-screen z-10 min-h-[300px] overflow-y-auto">
+    <div className=" w-full h-screen z-10 min-h-[300px] overflow-y-auto scrollbar-hide">
       {/*Editing User */}
       {isEditingUser ? (
         <EditProfile
