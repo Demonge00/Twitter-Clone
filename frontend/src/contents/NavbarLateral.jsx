@@ -34,7 +34,7 @@ function NavbarLateral() {
   return (
     <nav className="hidden sm:flex flex-col h-screen border-r pr-6 pt-4 items-end ">
       {/* Lista de iconos */}
-      <ul className=" flex flex-col w-full h-full gap-1 items-end xl:w-1/3 xl:items-start xl:gap-3">
+      <ul className=" flex flex-col w-full h-full gap-1 items-end xl:w-1/3 xl:items-start">
         <li>
           <Link href="/home" className="text-blue-900">
             <button className=" w-14 h-14 rounded-full active:bg-gray-200">
@@ -239,16 +239,14 @@ function NavbarLateral() {
           <Popover placement="bottom">
             <PopoverTrigger>
               <button
-                className=" w-12 h-12 rounded-full bg-blue-500 mb-2 mr-1 xl:w-48 "
+                className=" w-12 h-12 rounded-full bg-blue-500 mb-2 mr-1 xl:w-48 xl:h-full"
                 onClick={() => setIsPosting(true)}
               >
                 <FontAwesomeIcon
                   icon={faPen}
                   className=" h-8 w-8 text-white rotate-[270deg] xl:hidden"
                 ></FontAwesomeIcon>
-                <h1 className="hidden xl:inline text-2xl text-white">
-                  Postear
-                </h1>
+                <h1 className="hidden xl:inline text-xl text-white">Postear</h1>
               </button>
             </PopoverTrigger>
             <PopoverContent className="xl:hidden">
