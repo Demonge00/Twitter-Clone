@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { useUserDetails } from "../contents/UserContext";
 import { OpacityContext } from "../contents/OpacityContext";
 import { Security, TryRefreshToken } from "../api/api";
+import PublicationPage from "./PublicationPage";
 
 function WorkPage() {
   const location = useLocation();
@@ -29,7 +30,7 @@ function WorkPage() {
   }, [location]);
 
   return (
-    <div className="w-screen h-screen grid grid-cols-1 sm:grid-cols-[15%_85%] lg:grid-cols-[25%_50%_25%] xl:grid-cols-[30%_auto_20%_20%] mx-auto overflow-hidden">
+    <div className="w-screen h-screen grid grid-cols-1 sm:grid-cols-[15%_85%] lg:grid-cols-[25%_50%_25%] xl:grid-cols-[30%_40%_30%]  mx-auto overflow-hidden">
       <OpacityContext>
         <div className=" hidden sm:block w-full h-full overflow-y-auto">
           <NavbarLateral />
@@ -37,6 +38,7 @@ function WorkPage() {
         <div className=" h-screen sm:mr-10 lg:mr-0 border-r w-full xl:min-w-[550px]">
           <Navbar />
           <Routes>
+            <Route path="/publication/:pubId" element={<PublicationPage />} />
             <Route path="/home" element={<Homepage />}>
               <Route path="/home/para_ti" element={<Homepage />}></Route>
               <Route path="/home/seguidos" element={<Homepage />}></Route>
@@ -74,12 +76,14 @@ function WorkPage() {
             <Route path="/settings"></Route>
           </Routes>
         </div>
-        <div className=" border rounded-lg">
+        <div className="flex flex-col border rounded-lg">
           <div className=" h-12 w-full bg-gray-100 text-center flex justify-center items-center">
             <p className=" text-2xl">Mensajes</p>
           </div>
+          <div className="flex flex-grow items-center justify-center">
+            Aun no hay mensajes para mostrar
+          </div>
         </div>
-        <div className="bg-green-400"></div>
       </OpacityContext>
     </div>
   );
