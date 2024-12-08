@@ -32,7 +32,7 @@ function WorkPage() {
   return (
     <div className="w-screen h-screen grid grid-cols-1 sm:grid-cols-[15%_85%] lg:grid-cols-[25%_50%_25%] xl:grid-cols-[30%_40%_30%]  mx-auto overflow-hidden">
       <OpacityContext>
-        <div className=" hidden sm:block w-full h-full overflow-y-auto">
+        <div className=" hidden sm:block w-full h-full overflow-y-auto overflow-hidden">
           <NavbarLateral />
         </div>
         <div className=" h-screen sm:mr-10 lg:mr-0 border-r w-full xl:min-w-[550px]">

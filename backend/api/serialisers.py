@@ -55,7 +55,8 @@ class PubInformationSerializer(serializers.ModelSerializer):
         representation['likes'] = instance.likers.count()
         representation['retweets'] = instance.retweeters.count()
         representation['comments'] = instance.responses.count()
-        representation['avatar'] = instance.creator.profile_pick.url
+        if instance.creator.profile_pick:
+            representation['avatar'] = instance.creator.profile_pick.url
         representation['name'] = instance.creator.name
         representation['name_id'] = instance.creator.name_id
 

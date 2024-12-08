@@ -150,7 +150,7 @@ function Publication({
             </div>
           ) : null}
           {/*Barra de inserts*/}
-          <div className="w-full flex flex-col justify-evenly items-center z-30 flex-wrap text-gray-500">
+          <div className="w-full flex flex-col justify-evenly items-center z-10 flex-wrap text-gray-500">
             <div className="flex gap-1 justify-evenly items-center w-full py-2">
               <button
                 className="py-1 text-xs flex items-center justify-center gap-0.5"
