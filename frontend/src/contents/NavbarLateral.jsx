@@ -34,7 +34,7 @@ function NavbarLateral() {
   return (
     <nav className="hidden sm:flex flex-col h-screen border-r pr-6 pt-4 items-end ">
       {/* Lista de iconos */}
-      <ul className=" flex flex-col w-full h-full gap-1 items-end xl:w-1/3 xl:items-start">
+      <ul className=" flex flex-col w-full h-full gap-1 items-end xl:w-1/3 xl:items-start xl:min-w-48">
         <li>
           <Link href="/home" className="text-blue-900">
             <button className=" w-14 h-14 rounded-full active:bg-gray-200">
@@ -193,7 +193,7 @@ function NavbarLateral() {
           <Popover placement="bottom">
             <PopoverTrigger>
               <Link
-                href={`/profile/${userInfo.name_id}/post`}
+                href={`/profile/${userInfo.name_tag}/post`}
                 className={`${/\/profile/.test(isActive) ? "" : "text-black"}`}
               >
                 <button className=" w-14 h-14 rounded-full active:bg-gray-200">
@@ -262,12 +262,12 @@ function NavbarLateral() {
             <PopoverTrigger className="w-full h-full">
               <div className="w-full h-full flex">
                 <Avatar
-                  src={`http://localhost:8000/feather${userInfo.profile_pick}`}
+                  src={`http://localhost:8000/feather${userInfo.profile_pic}`}
                   className=" mb-6 mr-2"
                 />
                 <div className="flex flex-col flex-grow -mt-1 text-gray-400">
                   <h1>{userInfo.name}</h1>
-                  <h1>@{userInfo.name_id}</h1>
+                  <h1>@{userInfo.name_tag}</h1>
                 </div>
               </div>
             </PopoverTrigger>

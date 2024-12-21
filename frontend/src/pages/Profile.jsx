@@ -86,7 +86,7 @@ function Profile() {
   useEffect(() => {
     obtainList({
       accessToken: userInfo.accessToken,
-      name_id: params.userNameId,
+      name_tag: params.userNameId,
     });
   }, [location]);
   useEffect(() => {
@@ -97,7 +97,7 @@ function Profile() {
     ChangeFollow({
       accessToken: userInfo.accessToken,
       data: {
-        name_id: params.userNameId,
+        name_tag: params.userNameId,
         follow: userInfomation.followed,
       },
     }).then((response) => {
@@ -140,14 +140,14 @@ function Profile() {
         }`}
       >
         <img
-          src={`http://localhost:8000/feather${userInfomation.background_pick}`}
+          src={`http://localhost:8000/feather${userInfomation.background_pic}`}
           className=" w-full h-24 sm:h-40 object-cover"
         ></img>
         <Avatar
-          src={`http://localhost:8000/feather${userInfomation.profile_pick}`}
+          src={`http://localhost:8000/feather${userInfomation.profile_pic}`}
           className="h-14 w-14 mt-1 ml-3 relative -top-8 ring-4 ring-white object-cover"
         />
-        {userInfo.name_id == userInfomation.name_id ? (
+        {userInfo.name_tag == userInfomation.name_tag ? (
           <Button
             className=" mr-4 ml-auto rounded-full -mt-10 bg-white border border-black active:bg-gray-200 font-bold block"
             size="sm"
@@ -184,7 +184,7 @@ function Profile() {
                 {userInfomation.name}
               </p>
               <p className="p-0 m-0 text-base text-gray-600 ">
-                @{userInfomation.name_id}
+                @{userInfomation.name_tag}
               </p>
             </div>
             <p className=" break-words mr-2 ml-4 text-base mt-2">

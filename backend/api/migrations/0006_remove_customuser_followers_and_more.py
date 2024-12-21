@@ -7,21 +7,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0005_customuser_background_pick_customuser_profile_pick'),
+        ("api", "0005_customuser_background_pick_customuser_profile_pick"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='customuser',
-            name='followers',
+            model_name="customuser",
+            name="followers",
         ),
         migrations.RemoveField(
-            model_name='customuser',
-            name='follows',
+            model_name="customuser",
+            name="follows",
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='follow',
+            model_name="customuser",
+            name="follow",
             field=models.ManyToManyField(to=settings.AUTH_USER_MODEL),
         ),
     ]

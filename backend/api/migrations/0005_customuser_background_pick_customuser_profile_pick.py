@@ -7,18 +7,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0004_customuser_bio_alter_customuser_link'),
+        ("api", "0004_customuser_bio_alter_customuser_link"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customuser',
-            name='background_pick',
-            field=models.ImageField(blank=True, null=True, upload_to=api.models.upload_path_bg),
+            model_name="customuser",
+            name="background_pick",
+            field=models.ImageField(
+                blank=True, null=True, upload_to=api.models.get_path_for_bg
+            ),
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='profile_pick',
-            field=models.ImageField(blank=True, null=True, upload_to=api.models.upload_path_profile),
+            model_name="customuser",
+            name="profile_pick",
+            field=models.ImageField(
+                blank=True, null=True, upload_to=api.models.get_path_for_profile
+            ),
         ),
     ]

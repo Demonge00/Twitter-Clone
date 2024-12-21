@@ -24,14 +24,14 @@ export function UserDetailsProvider(props) {
   var userAccessToken = false;
   var userRefreshToken = false;
   var userName = false;
-  var profile_pick = false;
+  var profile_pic = false;
   var userNameId;
   if (jsonParsed) {
     if (jsonParsed.accessToken) {
       userAccessToken = jsonParsed.accessToken;
       userName = jwtDecode(userAccessToken).name;
-      userNameId = jwtDecode(userAccessToken).name_id;
-      profile_pick = jwtDecode(userAccessToken).profile_pick;
+      userNameId = jwtDecode(userAccessToken).name_tag;
+      profile_pic = jwtDecode(userAccessToken).profile_pic;
     } else {
       userAccessToken = false;
       userName = false;
@@ -45,8 +45,8 @@ export function UserDetailsProvider(props) {
     accessToken: userAccessToken,
     refreshToken: userRefreshToken,
     name: userName,
-    name_id: userNameId,
-    profile_pick: profile_pick,
+    name_tag: userNameId,
+    profile_pic: profile_pic,
   });
   const updateUserInfo = useCallback(
     (accessToken, refreshToken) => {
@@ -55,13 +55,13 @@ export function UserDetailsProvider(props) {
       newUserInfo.refreshToken = refreshToken;
       if (accessToken === false) {
         newUserInfo.name = false;
-        newUserInfo.name_id = false;
-        newUserInfo.profile_pick = false;
+        newUserInfo.name_tag = false;
+        newUserInfo.profile_pic = false;
       } else {
         const jwt_decoded = jwtDecode(newUserInfo.accessToken);
         newUserInfo.name = jwt_decoded.name;
-        newUserInfo.name_id = jwt_decoded.name_id;
-        newUserInfo.profile_pick = jwt_decoded.profile_pick;
+        newUserInfo.name_tag = jwt_decoded.name_tag;
+        newUserInfo.profile_pic = jwt_decoded.profile_pic;
       }
       setUserInfo(newUserInfo);
       localStorage.setItem("userDetails", JSON.stringify(newUserInfo));

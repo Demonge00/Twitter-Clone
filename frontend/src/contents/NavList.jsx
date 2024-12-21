@@ -23,7 +23,7 @@ function Display({ clicker }) {
     },
   });
   useEffect(() => {
-    info({ url: userInfo.name_id, accessToken: userInfo.accessToken });
+    info({ url: userInfo.name_tag, accessToken: userInfo.accessToken });
   }, []);
   return (
     <div>
@@ -34,7 +34,7 @@ function Display({ clicker }) {
       <div className=" h-screen w-[80vw] absolute bg-white z-50 top-0 left-[-80vw] animate-moveIn animate-fill-forwards overflow-y-auto overflow-x-hidden scrollbar-hide">
         <div className=" flex justify-between mt-4 ml-4 mr-4">
           <Avatar
-            src={`http://localhost:8000/feather${userInfo.profile_pick}`}
+            src={`http://localhost:8000/feather${userInfo.profile_pic}`}
             className={`
       } h-10 w-10 `}
           />
@@ -46,7 +46,7 @@ function Display({ clicker }) {
         <div className=" flex flex-col gap-0 mt-1 ml-4 mr-4">
           <p className="p-0 m-0 h-6 font-bold text-lg ">{userInfo.name}</p>
           <p className="p-0 m-0 text-base text-gray-600 ">
-            @{userInfo.name_id}
+            @{userInfo.name_tag}
           </p>
         </div>
         <div className=" flex justify-start gap-5 mt-2 ml-4 mr-4">
@@ -61,7 +61,7 @@ function Display({ clicker }) {
         </div>
         <Link
           className=" text-black w-full"
-          href={`/profile/${userInfo.name_id}/post`}
+          href={`/profile/${userInfo.name_tag}/post`}
         >
           <button className=" flex justify-start gap-6 mt-6 h-16 w-full items-center active:bg-gray-100">
             <FontAwesomeIcon

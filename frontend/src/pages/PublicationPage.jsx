@@ -48,7 +48,7 @@ function PublicationPage() {
   }, []);
   if (isLoading)
     return (
-      <div className=" flex w-full h-full justify-center items-center bg-black  ">
+      <div className=" flex w-full h-full justify-center items-cente ">
         <CircularProgress aria-label="Loading..." size="lg" />
         <h1 className=" text-center text-xl">Cargando</h1>
       </div>

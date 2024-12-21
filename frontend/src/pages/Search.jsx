@@ -78,7 +78,7 @@ function Search() {
       {/* Parte superior */}
       <div className={` flex w-full text-xl justify-between h-12 pt-2 pl-3`}>
         <Avatar
-          src={`http://localhost:8000/feather${userInfo.profile_pick}`}
+          src={`http://localhost:8000/feather${userInfo.profile_pic}`}
           className={`
             } h-8 w-8 mt-1 ml-2 sm:hidden`}
           onClick={() => {

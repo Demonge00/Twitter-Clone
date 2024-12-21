@@ -10,25 +10,77 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0007_alter_customuser_follow'),
+        ("api", "0007_alter_customuser_follow"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Publication',
+            name="Publication",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('message', models.TextField(max_length=300)),
-                ('creation_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('is_private', models.BooleanField(default=False)),
-                ('views', models.IntegerField(default=0)),
-                ('publication_pick', models.ImageField(blank=True, null=True, upload_to=api.models.upload_path_pub)),
-                ('bookmarked_by', models.ManyToManyField(related_name='bookmarks', to=settings.AUTH_USER_MODEL)),
-                ('creator', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='publications', to=settings.AUTH_USER_MODEL)),
-                ('likers', models.ManyToManyField(related_name='likes', to=settings.AUTH_USER_MODEL)),
-                ('looked_by', models.ManyToManyField(related_name='Pub_looks', to=settings.AUTH_USER_MODEL)),
-                ('response_of', models.ForeignKey(default=None, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='responses', to='api.publication')),
-                ('retweeters', models.ManyToManyField(related_name='retweets', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("message", models.TextField(max_length=300)),
+                (
+                    "creation_date",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                ("is_private", models.BooleanField(default=False)),
+                ("views", models.IntegerField(default=0)),
+                (
+                    "publication_pick",
+                    models.ImageField(
+                        blank=True, null=True, upload_to=api.models.get_path_for_pub
+                    ),
+                ),
+                (
+                    "bookmarked_by",
+                    models.ManyToManyField(
+                        related_name="bookmarks", to=settings.AUTH_USER_MODEL
+                    ),
+                ),
+                (
+                    "creator",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="publications",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "likers",
+                    models.ManyToManyField(
+                        related_name="likes", to=settings.AUTH_USER_MODEL
+                    ),
+                ),
+                (
+                    "looked_by",
+                    models.ManyToManyField(
+                        related_name="Pub_looks", to=settings.AUTH_USER_MODEL
+                    ),
+                ),
+                (
+                    "response_of",
+                    models.ForeignKey(
+                        default=None,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="responses",
+                        to="api.publication",
+                    ),
+                ),
+                (
+                    "retweeters",
+                    models.ManyToManyField(
+                        related_name="retweets", to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
         ),
     ]

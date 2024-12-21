@@ -29,7 +29,7 @@ function EditProfile({
     mutationFn: (data) => ChangeUserProfile(data),
     onSuccess: (response) => {
       updateUserInfo(response.data.access, response.data.refresh);
-      navigate(`/profile/${updatedInfo.name_id}`);
+      navigate(`/profile/${updatedInfo.name_tag}`);
       setIsEditingUserProp(false);
       setUserInfomationProp(updatedInfo);
     },
@@ -67,11 +67,11 @@ function EditProfile({
     formData.append("accessToken", userInfo.accessToken);
     for (let clave in updatedInfo) {
       if (
-        clave == "name" ||
-        clave == "name_id" ||
-        clave == "bio" ||
-        clave == "link" ||
-        clave == "location"
+        (clave == "name" && updatedInfo[clave] != null) ||
+        (clave == "name_tag" && updatedInfo[clave] != null) ||
+        (clave == "bio" && updatedInfo[clave] != null) ||
+        (clave == "link" && updatedInfo[clave] != null) ||
+        (clave == "location" && updatedInfo[clave] != null)
       )
         formData.append(clave.toString(), updatedInfo[clave]);
     }
@@ -108,7 +108,7 @@ function EditProfile({
             src={`${
               bgImageUrl
                 ? bgImageUrl
-                : `http://localhost:8000/feather${updatedInfo.background_pick}`
+                : `http://localhost:8000/feather${updatedInfo.background_pic}`
             }`}
           ></img>
           <label
@@ -142,7 +142,7 @@ function EditProfile({
           src={`${
             profImageUrl
               ? profImageUrl
-              : `http://localhost:8000/feather${updatedInfo.profile_pick}`
+              : `http://localhost:8000/feather${updatedInfo.profile_pic}`
           }`}
           className="h-14 w-14 mt-1 ml-3 relative -top-3 ring-4 ring-white sm:w-18 sm:h-18 sm:-top-8 sm:ml-5 z-30 lg:w-24 lg:h-24 lg:-top-14"
         ></Avatar>
@@ -167,13 +167,13 @@ function EditProfile({
             type="text"
             label="Nuevo id de usuario"
             labelPlacement="outside"
-            defaultValue={updatedInfo.name_id}
+            defaultValue={updatedInfo.name_tag}
             classNames={{ mainWrapper: "mt-2" }}
             color="primary"
             onChange={(e) =>
               setUpdatedInfo({
                 ...updatedInfo,
-                name_id: e.target.value,
+                name_tag: e.target.value,
               })
             }
           />

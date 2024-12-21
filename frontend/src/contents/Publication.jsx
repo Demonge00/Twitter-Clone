@@ -119,13 +119,13 @@ function Publication({
       {/*TextArea*/}
 
       <LinkG
-        className="flex w-full justify-start gap-2 hover:bg-gray-100 cursor-pointer z-10"
+        className="flex w-full justify-start gap-2 hover:bg-gray-100 cursor-pointer z-10 active:bg-white"
         to={`/publication/${publicationInfo.pub_id}`}
       >
         <div className="flex flex-col w-auto mt-1 ml-1 items-center">
           <Avatar
             as={Link}
-            href={`/profile/${publicationInfo.name_id}/post`}
+            href={`/profile/${publicationInfo.name_tag}/post`}
             src={`http://localhost:8000/feather${publicationInfo.avatar}`}
             className="h-12 w-12 ml-1 sm:h-14 sm:w-14 ring-4 ring-white sm:max-w-1/4"
           ></Avatar>
@@ -137,7 +137,7 @@ function Publication({
         <div className="flex flex-col w-full mt-1 max-w-[80%] sm:max-w-[85%]">
           <div className="flex gap-1 justify-start text-sm max-[370px]:text-xs items-center sm:text-base">
             <h1 className="font-bold text-base">{publicationInfo.name}</h1>
-            <p className="text-gray-400">@{publicationInfo.name_id}</p>
+            <p className="text-gray-400">@{publicationInfo.name_tag}</p>
             <h1 className="text-gray-400"> - {publicationInfo.time_elapsed}</h1>
           </div>
           <text className="break-all">{publicationInfo.text}</text>
