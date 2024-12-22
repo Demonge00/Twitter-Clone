@@ -411,7 +411,6 @@ class PostsView(APIView):
 class GetTweetsList(APIView):
 
     permission_classes = [IsAuthenticated]
-    print("asdas")
 
     def get(self, request, list_type=None):
         if list_type == "follows":
