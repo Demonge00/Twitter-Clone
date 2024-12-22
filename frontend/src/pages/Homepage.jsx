@@ -6,8 +6,8 @@ import Display from "../contents/NavList";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUserDetails } from "../contents/UserContext";
-import { ObtainOpacity } from "../contents/OpacityContext";
-import { useMutation } from "@tanstack/react-query";
+import { OpacitySetter } from "../contents/OpacityContext";
+import { useQuery } from "@tanstack/react-query";
 import { CircularProgress } from "@nextui-org/progress";
 import Publication from "../contents/Publication";
 import { GetListForYou, GetListFollow } from "../api/api";
@@ -16,51 +16,56 @@ function Homepage() {
   const { userInfo } = useUserDetails();
   const [navList, setNavList] = useState(false);
   const [isActive, setIsActive] = useState("/home");
-  const [information, setInformation] = useState(null);
-  const { setOpacity } = ObtainOpacity();
   const location = useLocation();
   {
     /*Opacity Handle*/
   }
-  useEffect(() => {
-    const scrollable = document.getElementById("scroll-component");
-    const handleScroll = () => {
-      const maxScroll = 300;
-      const scrollY = scrollable.scrollTop;
-      const newOpacity = Math.max(1 - scrollY / maxScroll, 0.4);
-      setOpacity(newOpacity);
-    };
-
-    scrollable.addEventListener("scroll", handleScroll);
-
-    setOpacity(1);
-
-    return () => {
-      scrollable.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  OpacitySetter();
   {
     /*Request*/
   }
   const {
-    mutate: obtainList,
+    data: information,
     isLoading,
     isSuccess,
-  } = useMutation({
-    mutationFn: (data) =>
+  } = useQuery({
+    queryKey: ["home", userInfo.accessToken, location],
+    queryFn: ({ queryKey }) =>
       location.pathname.match(/para_ti/)
-        ? GetListForYou(data)
-        : GetListFollow(data),
-    onSuccess: (response) => {
-      setInformation(response.data);
-    },
+        ? GetListForYou(queryKey[1])
+        : GetListFollow(queryKey[1]),
   });
-
+  {
+    /*Conditional func*/
+  }
+  function ConditionalRender() {
+    if (isLoading) {
+      return (
+        <div className=" flex items-center justify-center w-full h-full">
+          <CircularProgress aria-label="Loading..." size="lg" />
+          <h1 className=" text-center text-xl">Cargando</h1>
+        </div>
+      );
+    } else if (isSuccess) {
+      return information.data.length ? (
+        information.data.map((e, index) => {
+          return <Publication info={e} key={index} />;
+        })
+      ) : (
+        <div className=" flex items-center justify-center w-full h-full">
+          <h1 className=" text-center text-xl">No hay tweets para mostrar</h1>
+        </div>
+      );
+    } else {
+      return (
+        <div className=" flex items-center justify-center w-full h-full">
+          <h1 className=" text-center text-xl">Error al cargar los tweets</h1>
+        </div>
+      );
+    }
+  }
   useEffect(() => {
     setIsActive(location.pathname);
-  }, [location]);
-  useEffect(() => {
-    obtainList(userInfo.accessToken);
   }, [location]);
   return (
     <div
@@ -119,26 +124,7 @@ function Homepage() {
         className="w-full h-full overflow-y-scroll scrollbar-hide pb-14 sm:p-0"
         id="scroll-component"
       >
-        {isLoading ? (
-          <div className=" flex items-center justify-center w-full h-full">
-            <CircularProgress aria-label="Loading..." size="lg" />
-            <h1 className=" text-center text-xl">Cargando</h1>
-          </div>
-        ) : isSuccess ? (
-          information.length ? (
-            information.map((e, index) => {
-              return <Publication info={e} key={index} />;
-            })
-          ) : (
-            <div className=" flex items-center justify-center w-full h-full">
-              <h1 className=" text-center text-xl">
-                No hay tweets para mostrar
-              </h1>
-            </div>
-          )
-        ) : (
-          <h1>Error al obtener los datos</h1>
-        )}
+        {ConditionalRender()}
       </div>
     </div>
   );

@@ -104,8 +104,5 @@ class Publication(models.Model):
         upload_to=get_path_for_pub, blank=True, null=True
     )
 
-    def __str__(self):
-        return self.id
-
     def likes(self):
         return self.likers.count()

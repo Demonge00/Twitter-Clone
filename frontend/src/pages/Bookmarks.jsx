@@ -3,8 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@nextui-org/link";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ObtainOpacity } from "../contents/OpacityContext";
-import { useMutation } from "@tanstack/react-query";
+import { OpacitySetter } from "../contents/OpacityContext";
+import { useQuery } from "@tanstack/react-query";
 import { CircularProgress } from "@nextui-org/progress";
 import Publication from "../contents/Publication";
 import { GetListBookmarked } from "../api/api";
@@ -12,48 +12,53 @@ import { useUserDetails } from "../contents/UserContext";
 function Bookmarks() {
   const { userInfo } = useUserDetails();
   const [isActive, setIsActive] = useState("/home");
-  const [information, setInformation] = useState(null);
-  const { setOpacity } = ObtainOpacity();
   const location = useLocation();
   {
     /*Opacity Handle*/
   }
-  useEffect(() => {
-    const scrollable = document.getElementById("scroll-component");
-    const handleScroll = () => {
-      const maxScroll = 300;
-      const scrollY = scrollable.scrollTop;
-      const newOpacity = Math.max(1 - scrollY / maxScroll, 0.4);
-      setOpacity(newOpacity);
-    };
-
-    scrollable.addEventListener("scroll", handleScroll);
-
-    setOpacity(1);
-
-    return () => {
-      scrollable.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
+  OpacitySetter();
   {
     /*Request*/
   }
   const {
-    mutate: obtainList,
+    data: information,
     isLoading,
     isSuccess,
-  } = useMutation({
-    mutationFn: (data) => GetListBookmarked(data),
-    onSuccess: (response) => {
-      setInformation(response.data);
-    },
+  } = useQuery({
+    queryKey: ["bookmarks", userInfo.accessToken],
+    queryFn: ({ queryKey }) => GetListBookmarked(queryKey[1]),
   });
-
+  {
+    /*Conditional func*/
+  }
+  function ConditionalRender() {
+    if (isLoading) {
+      return (
+        <div className=" flex items-center justify-center w-full h-full">
+          <CircularProgress aria-label="Loading..." size="lg" />
+          <h1 className=" text-center text-xl">Cargando</h1>
+        </div>
+      );
+    } else if (isSuccess) {
+      return information.data.length ? (
+        information.data.map((e, index) => {
+          return <Publication info={e} key={index} />;
+        })
+      ) : (
+        <div className=" flex items-center justify-center w-full h-full">
+          <h1 className=" text-center text-xl">No hay tweets para mostrar</h1>
+        </div>
+      );
+    } else {
+      return (
+        <div className=" flex items-center justify-center w-full h-full">
+          <h1 className=" text-center text-xl">Error al cargar los tweets</h1>
+        </div>
+      );
+    }
+  }
   useEffect(() => {
     setIsActive(location.pathname);
-  }, [location]);
-  useEffect(() => {
-    obtainList(userInfo.accessToken);
   }, [location]);
 
   return (
@@ -85,26 +90,7 @@ function Bookmarks() {
         className="w-full h-full overflow-y-scroll scrollbar-hide pb-14 sm:p-0"
         id="scroll-component"
       >
-        {isLoading ? (
-          <div className=" flex items-center justify-center w-full h-full">
-            <CircularProgress aria-label="Loading..." size="lg" />
-            <h1 className=" text-center text-xl">Cargando</h1>
-          </div>
-        ) : isSuccess ? (
-          information.length ? (
-            information.map((e, index) => {
-              return <Publication info={e} key={index} />;
-            })
-          ) : (
-            <div className=" flex items-center justify-center w-full h-full">
-              <h1 className=" text-center text-xl">
-                No hay tweets para mostrar
-              </h1>
-            </div>
-          )
-        ) : (
-          <h1>Error al obtener los datos</h1>
-        )}
+        {ConditionalRender()}
       </div>
     </div>
   );

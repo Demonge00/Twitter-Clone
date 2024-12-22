@@ -27,6 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PublicationInformationSerializer(serializers.ModelSerializer):
     time_elapsed = serializers.SerializerMethodField(read_only=True)
+    exact_time = serializers.SerializerMethodField(read_only=True)
     pub_id = serializers.IntegerField(source="id")
     response_of = serializers.SerializerMethodField(read_only=True)
 
@@ -39,6 +40,7 @@ class PublicationInformationSerializer(serializers.ModelSerializer):
             "time_elapsed",
             "pub_id",
             "response_of",
+            "exact_time",
         ]
 
     def get_time_elapsed(self, obj):
@@ -53,6 +55,19 @@ class PublicationInformationSerializer(serializers.ModelSerializer):
             return str(time.seconds // 60) + "m"
         else:
             return str(time.seconds) + "s"
+
+    def get_exact_time(self, obj):
+        if obj.creation_date.hour < 12:
+            horario = "AM"
+        else:
+            horario = "PM"
+        if obj.creation_date.minute < 10:
+            minuto = "0" + str(obj.creation_date.minute)
+        else:
+            minuto = str(obj.creation_date.minute)
+        if obj.creation_date.hour < 10:
+            return "0" + str(obj.creation_date.hour) + ":" + minuto + horario
+        return str(obj.creation_date.hour) + ":" + minuto + horario
 
     def get_response_of(self, obj):
         if obj.response_of:

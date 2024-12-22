@@ -12,7 +12,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { useUserDetails } from "../contents/UserContext";
-import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { CircularProgress } from "@nextui-org/progress";
 import Publication from "../contents/Publication";
 import {
@@ -28,43 +28,49 @@ import EditProfile from "../contents/EditProfile";
 function Profile() {
   const params = useParams();
   const { userInfo } = useUserDetails();
-  const [userInfomation, setUserInfomation] = useState({});
   const [isActive, setIsActive] = useState("/home");
   const [scroll, setScroll] = useState(0);
-  const [information, setInformation] = useState(null);
   const [isEditingUser, setIsEditingUser] = useState(false);
   const location = useLocation();
   const {
-    mutate: info,
+    data: userInfomation,
     isError,
     isLoading,
-  } = useMutation({
-    mutationFn: (data) => GetUserInfo(data),
-    onSuccess: (response) => {
-      setUserInfomation(response.data);
-    },
+  } = useQuery({
+    queryKey: ["user", params.userNameId, userInfo.accessToken],
+    queryFn: ({ queryKey }) =>
+      GetUserInfo({ url: queryKey[1], accessToken: queryKey[2] }),
+    select: (data) => data.data,
   });
-  {
-    /*Request*/
-  }
   const {
-    mutate: obtainList,
+    data: information,
     isSuccess,
     isLoading: LoadingFunct,
-  } = useMutation({
-    mutationFn: (data) => {
-      if (location.pathname.match(/post/)) return GetListPosts(data);
+  } = useQuery({
+    queryKey: ["list", params.userNameId, userInfo.accessToken, location],
+    queryFn: ({ queryKey }) => {
+      if (location.pathname.match(/post/))
+        return GetListPosts({
+          accessToken: queryKey[2],
+          name_tag: queryKey[1],
+        });
       else if (location.pathname.match(/responses/))
-        return GetListResponses(data);
+        return GetListResponses({
+          accessToken: queryKey[2],
+          name_tag: queryKey[1],
+        });
       else if (location.pathname.match(/pictures-and-videos/))
-        return GetListMultimed(data);
-      else return GetListLikes(data);
-    },
-    onSuccess: (response) => {
-      setInformation(response.data);
+        return GetListMultimed({
+          accessToken: queryKey[2],
+          name_tag: queryKey[1],
+        });
+      else
+        return GetListLikes({
+          accessToken: queryKey[2],
+          name_tag: queryKey[1],
+        });
     },
   });
-
   //Scrolls
   useEffect(() => {
     const handleScroll = () => {
@@ -80,15 +86,6 @@ function Profile() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [scroll]);
-  useEffect(() => {
-    info({ url: params.userNameId, accessToken: userInfo.accessToken });
-  }, [isEditingUser, location]);
-  useEffect(() => {
-    obtainList({
-      accessToken: userInfo.accessToken,
-      name_tag: params.userNameId,
-    });
-  }, [location]);
   useEffect(() => {
     setIsActive(location.pathname);
   }, [location, params.userNameId, userInfomation]);
@@ -108,13 +105,36 @@ function Profile() {
       });
     });
   };
-
+  const conditionalRender = () => {
+    if (LoadingFunct)
+      return (
+        <div className=" flex items-center justify-center w-full h-full">
+          <CircularProgress aria-label="Loading..." size="lg" />
+          <h1 className=" text-center text-xl">Cargando</h1>
+        </div>
+      );
+    else if (isSuccess) {
+      if (information.data.length) {
+        return information.data.map((e, index) => {
+          return <Publication info={e} key={index} commentPost={false} />;
+        });
+      } else {
+        return (
+          <div className=" flex items-center justify-center w-full h-full">
+            <h1 className=" text-center text-xl">No hay tweets para mostrar</h1>
+          </div>
+        );
+      }
+    } else {
+      return <h1>Error al obtener los datos</h1>;
+    }
+  };
+  if (isLoading) return <div>Cargando...</div>;
   return (
     <div className=" w-full h-screen z-10 min-h-[300px] overflow-y-auto scrollbar-hide">
       {/*Editing User */}
       {isEditingUser ? (
         <EditProfile
-          setUserInfomationProp={(data) => setUserInfomation(data)}
           setIsEditingUserProp={() => {
             setIsEditingUser(false);
           }}
@@ -122,17 +142,18 @@ function Profile() {
         />
       ) : null}
       {/*Barra Go Back */}
-      <div className="w-full h-14 pl-5 flex items-center gap-9 sticky z-50 bg-white top-0 sm:hidden">
-        <Link href="/home">
-          <FontAwesomeIcon icon={faArrowLeft} className="h-4 text-black" />
-        </Link>
-        <div className="">
-          <p className="font-bold text-lg mt-1">{userInfomation.name}</p>
-          <p className="text-slate-500 -mt-1">
-            {userInfomation.post_number}assfas
-          </p>
+      {isEditingUser ? null : (
+        <div className="w-full h-14 pl-5 flex items-center gap-9 sticky z-40 bg-white top-0 sm:hidden">
+          <Link href="/home">
+            <FontAwesomeIcon icon={faArrowLeft} className="h-4 text-black" />
+          </Link>
+          <div className="">
+            <p className="font-bold text-lg mt-1">{userInfomation.name}</p>
+            <p className="text-slate-500 -mt-1">{userInfomation.post_number}</p>
+          </div>
         </div>
-      </div>
+      )}
+
       {/*Parte superior Geston de usuario*/}
       <div
         className={`w-full bg-white  relative top-0 ${
@@ -271,27 +292,7 @@ function Profile() {
       </div>
       {/*Parte inferior paginado de tweets*/}
       <div className="w-full h-full pb-14 sm:p-0" id="scroll-component">
-        {LoadingFunct ? (
-          <div className=" flex items-center justify-center w-full h-full">
-            <CircularProgress aria-label="Loading..." size="lg" />
-            <h1 className=" text-center text-xl">Cargando</h1>
-          </div>
-        ) : isSuccess ? (
-          information.length ? (
-            information.map((e, index) => {
-              console.log(e);
-              return <Publication info={e} key={index} commentPost={false} />;
-            })
-          ) : (
-            <div className=" flex items-center justify-center w-full h-full">
-              <h1 className=" text-center text-xl">
-                No hay tweets para mostrar
-              </h1>
-            </div>
-          )
-        ) : (
-          <h1>Error al obtener los datos</h1>
-        )}
+        {conditionalRender()}
       </div>
     </div>
   );

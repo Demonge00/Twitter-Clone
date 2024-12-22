@@ -77,7 +77,7 @@ function PostResponseProfile({ info }) {
   return (
     <div className="w-full flex items-center justify-center">
       <div className=" h-full w-full bg-white scrollbar-hide overflow-y-auto overflow-x-hidden">
-        <h1 className="text-sm sm:text-base flex gap-3 text-gray-500 mt-1 items-center">
+        <h1 className="text-sm flex gap-4 text-gray-500 mt-1 items-center">
           <FontAwesomeIcon icon={faComment} className={`h-4 pl-10`} />
           En respuesta a {info.name}
         </h1>

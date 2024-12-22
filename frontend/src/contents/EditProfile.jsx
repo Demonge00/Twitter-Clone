@@ -10,11 +10,7 @@ import { ChangeUserProfile } from "../api/api";
 import { useUserDetails } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 
-function EditProfile({
-  userInformationProp,
-  setUserInfomationProp,
-  setIsEditingUserProp,
-}) {
+function EditProfile({ userInformationProp, setIsEditingUserProp }) {
   {
     /*Var*/
   }
@@ -31,7 +27,6 @@ function EditProfile({
       updateUserInfo(response.data.access, response.data.refresh);
       navigate(`/profile/${updatedInfo.name_tag}`);
       setIsEditingUserProp(false);
-      setUserInfomationProp(updatedInfo);
     },
     onError: (error) => {
       console.log(error);

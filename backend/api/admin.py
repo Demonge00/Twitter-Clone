@@ -82,6 +82,7 @@ class PublicationAdmin(admin.ModelAdmin):
                     "text",
                     "is_private",
                     "publication_pick",
+                    "creation_date",
                 )
             },
         ),

@@ -10,21 +10,21 @@ import {
 import { useUserDetails } from "./UserContext";
 import { Link } from "@nextui-org/link";
 import { GetUserInfo } from "../api/api";
-import { useEffect, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 // eslint-disable-next-line react/prop-types
 function Display({ clicker }) {
   const { userInfo, updateUserInfo } = useUserDetails();
-  const [userInfomation, setUserInfomation] = useState({});
-  const { mutate: info } = useMutation({
-    mutationFn: (data) => GetUserInfo(data),
-    onSuccess: (response) => {
-      setUserInfomation(response.data);
-    },
+  const {
+    data: userInfomation,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["user", userInfo.accessToken, userInfo.name_tag],
+    queryFn: ({ queryKey }) =>
+      GetUserInfo({ url: queryKey[2], accessToken: queryKey[1] }),
   });
-  useEffect(() => {
-    info({ url: userInfo.name_tag, accessToken: userInfo.accessToken });
-  }, []);
+  if (isLoading) return <div className="w-full h-full">Loading...</div>;
+  else if (isError) return <div>Error</div>;
   return (
     <div>
       <div
@@ -51,11 +51,11 @@ function Display({ clicker }) {
         </div>
         <div className=" flex justify-start gap-5 mt-2 ml-4 mr-4">
           <p className="p-0 m-0  text-sm ">
-            <span className="font-bold">{userInfomation.follows}</span>{" "}
+            <span className="font-bold">{userInfomation.data.follows}</span>{" "}
             <span className="text-gray-600">Siguiendo</span>
           </p>
           <p className="p-0  text-sm ">
-            <span className="font-bold">{userInfomation.followers}</span>{" "}
+            <span className="font-bold">{userInfomation.data.followers}</span>{" "}
             <span className="text-gray-600">Seguidores</span>
           </p>
         </div>
