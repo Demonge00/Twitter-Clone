@@ -28,6 +28,6 @@ class Migration(migrations.Migration):
         migrations.RenameField(
             model_name="customuser",
             old_name="profile_pick",
-            new_name="profile_pick",
+            new_name="profile_pic",
         ),
     ]

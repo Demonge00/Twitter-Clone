@@ -186,7 +186,7 @@ function PostPublication({ setIsPostingProp }) {
                 </button>
               </PopoverTrigger>
               <PopoverContent>
-                <ol className="flex flex-col text-blue-600 text-xl items-center justify-center">
+                <ol className="flex flex-col text-blue-600 text-xl items-center justify-center cursor-pointer">
                   <a
                     onClick={() => setPubRestricted(0)}
                     className={`${

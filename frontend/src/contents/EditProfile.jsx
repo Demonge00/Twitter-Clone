@@ -53,6 +53,7 @@ function EditProfile({ userInformationProp, setIsEditingUserProp }) {
   };
   const handleClick = () => {
     const formData = new FormData();
+    formData.append("url", userInfo.name_tag);
     if (backgroundImage) {
       formData.append("bg_image", backgroundImage, backgroundImage.name);
     }
@@ -75,10 +76,10 @@ function EditProfile({ userInformationProp, setIsEditingUserProp }) {
   return (
     <div className=" h-full w-full absolute top-0 left-0 flex items-center justify-center">
       <div
-        className=" w-screen h-screen absolute z-10  bg-black opacity-50"
+        className=" w-screen h-screen absolute z-30  bg-black opacity-50"
         onClick={setIsEditingUserProp}
       ></div>
-      <div className=" h-full w-full z-20 absolute bg-white sm:h-[60%] sm:w-1/3 sm:rounded-lg overflow-x-scroll scrollbar-hide">
+      <div className=" h-full w-full z-40 absolute bg-white sm:h-[60%] sm:w-1/3 sm:rounded-lg overflow-x-scroll scrollbar-hide">
         {/*Barra Go Back */}
         <div
           className={`w-full h-14 pl-5 pr-2 flex items-center gap-9 sticky top-0 border-b-1 justify-between sm:hidden z-50 bg-white mb-6`}

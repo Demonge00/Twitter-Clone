@@ -5,6 +5,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
+from django.utils.crypto import get_random_string
 
 
 def get_path_for_bg(instance, filename):
@@ -50,7 +51,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         "self", symmetrical=False, related_name="followed_by"
     )
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
     sent_verification_email = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
@@ -100,9 +101,15 @@ class Publication(models.Model):
     commented_by = models.ManyToManyField(CustomUser, related_name="comments")
     is_private = models.BooleanField(default=False)
     views = models.IntegerField(default=0)
-    publication_pick = models.ImageField(
+    publication_pic = models.ImageField(
         upload_to=get_path_for_pub, blank=True, null=True
     )
 
     def likes(self):
         return self.likers.count()
+
+    def retweets(self):
+        return self.retweeters.count()
+
+    def comments(self):
+        return self.responses.count()
