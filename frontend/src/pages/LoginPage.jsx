@@ -13,6 +13,7 @@ function LoginPage() {
   const { userInfo, updateUserInfo } = useUserDetails();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const buttonEnabled = Boolean(email && password);
 
   const {
@@ -22,7 +23,9 @@ function LoginPage() {
   } = useMutation({
     mutationFn: (data) => Login(data),
     onError: (error) => {
-      console.log(error);
+      if (error.response) {
+        setError(error.response.data.detail);
+      } else setError("Error de red");
     },
     onSuccess: (response) => {
       updateUserInfo(response.data.access, response.data.refresh);
@@ -47,9 +50,7 @@ function LoginPage() {
     >
       <form className=" min-w-[280px] sm:min-w-[382px] w-1/2 lg:w-1/3 min-h-60 border rounded flex flex-col gap-2 bg-gray-50 ">
         {isError ? (
-          <h1 className="text-center text-blue-500 gap-2 pt-4 ">
-            Ha ocurrido un error. Intentelo de nuevo
-          </h1>
+          <h1 className="text-center text-blue-500 gap-2 pt-4 ">{error}</h1>
         ) : (
           <FontAwesomeIcon
             icon={faFeather}

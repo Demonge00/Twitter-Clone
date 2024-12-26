@@ -214,7 +214,7 @@ def VerifyUser(request, verification_secret):
     try:
         user = User.objects.get(verification_secret=verification_secret)
         user.is_verified = True
-        user.is_acti    ve = True
+        user.is_active = True
         user.save()
         return Response({"message": "user_registered"}, status=status.HTTP_200_OK)
     except Exception as e:

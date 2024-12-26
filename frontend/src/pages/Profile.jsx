@@ -38,12 +38,7 @@ function Profile() {
     isError,
     isLoading,
   } = useQuery({
-    queryKey: [
-      "userInfomation",
-      params.userNameId,
-      userInfo.accessToken,
-      queryAgain,
-    ],
+    queryKey: ["user", params.userNameId, userInfo.accessToken, queryAgain],
     queryFn: ({ queryKey }) =>
       GetUserInfo({ url: queryKey[1], accessToken: queryKey[2] }),
     select: (data) => data.data,
