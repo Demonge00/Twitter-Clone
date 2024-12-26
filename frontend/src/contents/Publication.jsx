@@ -152,11 +152,11 @@ function Publication({
               </h1>
             </div>
             <div className="break-all">{publicationInfo.text}</div>
-            {publicationInfo.publication_pick ? (
+            {publicationInfo.publication_pic ? (
               <div className="relative w-full h-full">
                 <img
                   className=" w-full min-h-40 relative z-20 object-fill block rounded-md"
-                  src={`http://localhost:8000/feather${publicationInfo.publication_pick}`}
+                  src={`http://localhost:8000/feather${publicationInfo.publication_pic}`}
                 ></img>
               </div>
             ) : null}

@@ -40,7 +40,7 @@ class CustomUserAdmin(UserAdmin):
                     "password",
                     "sent_verification_email",
                     "name_tag",
-                    "is_verificated",
+                    "is_verified",
                     "date_joined",
                     "background_pic",
                     "profile_pic",
@@ -81,7 +81,7 @@ class PublicationAdmin(admin.ModelAdmin):
                     "creator",
                     "text",
                     "is_private",
-                    "publication_pick",
+                    "publication_pic",
                     "creation_date",
                 )
             },
@@ -92,7 +92,7 @@ class PublicationAdmin(admin.ModelAdmin):
             None,
             {
                 "classes": ("wide",),
-                "fields": ("creator", "text", "is_private", "publication_pick"),
+                "fields": ("creator", "text", "is_private", "publication_pic"),
             },
         ),
     )

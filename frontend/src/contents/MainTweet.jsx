@@ -143,11 +143,11 @@ function MainTweet({
           <div className="break-all mt-1 text-lg mx-3">
             {publicationInfo.text}
           </div>
-          {publicationInfo.publication_pick ? (
+          {publicationInfo.publication_pic ? (
             <div className="relative h-full mx-3 ">
               <img
                 className=" min-h-40 relative z-20 object-fill block rounded-md mr-10"
-                src={`http://localhost:8000/feather${publicationInfo.publication_pick}`}
+                src={`http://localhost:8000/feather${publicationInfo.publication_pic}`}
               ></img>
             </div>
           ) : null}
