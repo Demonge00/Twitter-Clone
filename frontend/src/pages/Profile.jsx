@@ -31,13 +31,19 @@ function Profile() {
   const [isActive, setIsActive] = useState("/home");
   const [scroll, setScroll] = useState(0);
   const [isEditingUser, setIsEditingUser] = useState(false);
+  const [queryAgain, setQueryAgain] = useState(false);
   const location = useLocation();
   const {
     data: userInfomation,
     isError,
     isLoading,
   } = useQuery({
-    queryKey: ["user", params.userNameId, userInfo.accessToken],
+    queryKey: [
+      "userInfomation",
+      params.userNameId,
+      userInfo.accessToken,
+      queryAgain,
+    ],
     queryFn: ({ queryKey }) =>
       GetUserInfo({ url: queryKey[1], accessToken: queryKey[2] }),
     select: (data) => data.data,
@@ -97,12 +103,8 @@ function Profile() {
         name_tag: params.userNameId,
         follow: userInfomation.followed,
       },
-    }).then((response) => {
-      setUserInfomation({
-        ...userInfomation,
-        followed: response.data.followed,
-        followers: userInfomation.followers + (response.data.followed ? 1 : -1),
-      });
+    }).then(() => {
+      setQueryAgain(!queryAgain);
     });
   };
   const conditionalRender = () => {

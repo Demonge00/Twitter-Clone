@@ -40,7 +40,7 @@ class CustomUserAdmin(UserAdmin):
                     "password",
                     "sent_verification_email",
                     "name_tag",
-                    "is_verificated",
+                    "is_verified",
                     "date_joined",
                     "background_pic",
                     "profile_pic",

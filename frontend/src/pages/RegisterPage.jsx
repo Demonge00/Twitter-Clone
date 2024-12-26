@@ -18,6 +18,7 @@ function RegisterPage() {
     password: "",
     verifiedPassword: "",
   });
+  const [error, setError] = useState("");
   const buttonEnabled =
     userInformation.user &&
     checkEmailComplex(userInformation.email) &&
@@ -33,6 +34,11 @@ function RegisterPage() {
     isSuccess,
   } = useMutation({
     mutationFn: (data) => RegisterUser(data),
+    onError: (error) => {
+      if (error.response) {
+        setError(error.response.data.error);
+      } else setError("Error de red");
+    },
   });
   const submitHandler = (e) => {
     e.preventDefault();
@@ -63,9 +69,7 @@ function RegisterPage() {
         <div className="w-1/2 lg:w-1/3 flex flex-col justify-center items-center">
           <form className=" min-w-[280px] sm:min-w-[382px] w-full min-h-60 border rounded flex flex-col gap-2 bg-gray-50">
             {isError ? (
-              <h1 className="text-center text-blue-500 gap-2 pt-4 ">
-                Ha ocurrido un error con el registro. Intentelo de nuevo
-              </h1>
+              <h1 className="text-center text-blue-500 gap-2 pt-4 ">{error}</h1>
             ) : (
               <FontAwesomeIcon
                 icon={faFeather}

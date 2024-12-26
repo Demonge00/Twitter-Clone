@@ -79,8 +79,9 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = "name_tag"
 
     def get_serializer(self, *args, **kwargs):
-        user = User.objects.get(id=self.request.user.id)
-        kwargs["context"] = {"requester": user}
+        if self.request.user.id:
+            user = User.objects.get(id=self.request.user.id)
+            kwargs["context"] = {"requester": user}
         return super().get_serializer(*args, **kwargs)
 
     def get_object(self):
@@ -209,11 +210,11 @@ class PasswordRecoverList(APIView):
 
 
 @api_view(["GET"])
-def VerifyUser(verification_secret):
+def VerifyUser(request, verification_secret):
     try:
         user = User.objects.get(verification_secret=verification_secret)
-        user.is_verificated = True
-        user.is_active = True
+        user.is_verified = True
+        user.is_acti    ve = True
         user.save()
         return Response({"message": "user_registered"}, status=status.HTTP_200_OK)
     except Exception as e:

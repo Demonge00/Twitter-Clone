@@ -5,6 +5,7 @@ from api.models import *
 class UserSerializer(serializers.ModelSerializer):
     followed = serializers.SerializerMethodField(read_only=True)
     email = serializers.EmailField(write_only=True, required=False)
+    password = serializers.CharField(write_only=True, required=False)
     name_tag = serializers.CharField(required=False)
 
     class Meta:
@@ -16,6 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
             "location",
             "link",
             "followers",
+            "password",
             "follows",
             "joined_in",
             "bio",
@@ -37,6 +39,12 @@ class UserSerializer(serializers.ModelSerializer):
             if CustomUser.objects.filter(email=attrs["email"]).exists():
                 raise serializers.ValidationError({"error": "El email ya existe."})
         return attrs
+
+    def create(self, validated_data):
+        user = super().create(validated_data)
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
 
 
 class PublicationInformationSerializer(serializers.ModelSerializer):
