@@ -1,6 +1,7 @@
 // tailwind.config.js
 
 import { nextui } from "@nextui-org/react";
+import animatedPlugin from "tailwindcss-animated";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -28,5 +29,5 @@ export default {
   },
   darkMode: "class",
   // eslint-disable-next-line no-undef
-  plugins: [nextui(), require("tailwindcss-animated")],
+  plugins: [nextui(), animatedPlugin],
 };
