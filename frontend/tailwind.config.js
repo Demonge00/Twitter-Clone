@@ -1,5 +1,5 @@
 // tailwind.config.js
-
+import require from "require";
 // eslint-disable-next-line no-undef
 const { nextui } = require("@nextui-org/react");
 
