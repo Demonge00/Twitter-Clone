@@ -158,11 +158,15 @@ function Profile() {
         }`}
       >
         <img
-          src={`http://localhost:8000/feather${userInfomation.background_pic}`}
+          src={`${import.meta.env.VITE_API_URL}feather${
+            userInfomation.background_pic
+          }`}
           className=" w-full h-24 sm:h-40 object-cover"
         ></img>
         <Avatar
-          src={`http://localhost:8000/feather${userInfomation.profile_pic}`}
+          src={`${import.meta.env.VITE_API_URL}feather${
+            userInfomation.profile_pic
+          }`}
           className="h-14 w-14 mt-1 ml-3 relative -top-8 ring-4 ring-white object-cover"
         />
         {userInfo.name_tag == userInfomation.name_tag ? (

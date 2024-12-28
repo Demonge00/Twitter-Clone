@@ -129,7 +129,9 @@ function Publication({
             <Avatar
               as={Link}
               href={`/profile/${publicationInfo.name_tag}/post`}
-              src={`http://localhost:8000/feather${publicationInfo.avatar}`}
+              src={`${import.meta.env.VITE_API_URL}feather${
+                publicationInfo.avatar
+              }`}
               className="h-12 w-12 ml-1 sm:h-14 sm:w-14 ring-4 ring-white sm:max-w-1/4"
             ></Avatar>
             {commentPost ? (
@@ -156,7 +158,9 @@ function Publication({
               <div className="relative w-full h-full">
                 <img
                   className=" w-full min-h-40 relative z-20 object-fill block rounded-md"
-                  src={`http://localhost:8000/feather${publicationInfo.publication_pic}`}
+                  src={`${import.meta.env.VITE_API_URL}feather${
+                    publicationInfo.publication_pic
+                  }`}
                 ></img>
               </div>
             ) : null}
