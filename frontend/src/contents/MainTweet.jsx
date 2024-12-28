@@ -128,7 +128,9 @@ function MainTweet({
             <Avatar
               as={Link}
               href={`/profile/${publicationInfo.name_tag}/post`}
-              src={`http://localhost:8000/feather${publicationInfo.avatar}`}
+              src={`${import.meta.env.VITE_API_URL}feather${
+                publicationInfo.avatar
+              }`}
               className="h-12 w-12 ml-2 sm:h-14 sm:w-14 ring-4 ring-white sm:max-w-1/4 "
             ></Avatar>
             <div className="flex flex-col flex-grow">
@@ -147,7 +149,9 @@ function MainTweet({
             <div className="relative h-full mx-3 ">
               <img
                 className=" min-h-40 relative z-20 object-fill block rounded-md mr-10"
-                src={`http://localhost:8000/feather${publicationInfo.publication_pic}`}
+                src={`${import.meta.env.VITE_API_URL}feather${
+                  publicationInfo.publication_pic
+                }`}
               ></img>
             </div>
           ) : null}

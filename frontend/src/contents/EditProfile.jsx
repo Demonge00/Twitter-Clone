@@ -104,7 +104,9 @@ function EditProfile({ userInformationProp, setIsEditingUserProp }) {
             src={`${
               bgImageUrl
                 ? bgImageUrl
-                : `http://localhost:8000/feather${updatedInfo.background_pic}`
+                : `${import.meta.env.VITE_API_URL}feather${
+                    updatedInfo.background_pic
+                  }`
             }`}
           ></img>
           <label
@@ -138,7 +140,9 @@ function EditProfile({ userInformationProp, setIsEditingUserProp }) {
           src={`${
             profImageUrl
               ? profImageUrl
-              : `http://localhost:8000/feather${updatedInfo.profile_pic}`
+              : `${import.meta.env.VITE_API_URL}feather${
+                  updatedInfo.profile_pic
+                }`
           }`}
           className="h-14 w-14 mt-1 ml-3 relative -top-3 ring-4 ring-white sm:w-18 sm:h-18 sm:-top-8 sm:ml-5 z-30 lg:w-24 lg:h-24 lg:-top-14"
         ></Avatar>

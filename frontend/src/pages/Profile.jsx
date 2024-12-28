@@ -8,70 +8,31 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@nextui-org/link";
 import { Avatar } from "@nextui-org/avatar";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { useUserDetails } from "../contents/UserContext";
-import { useQuery } from "@tanstack/react-query";
-import { CircularProgress } from "@nextui-org/progress";
-import Publication from "../contents/Publication";
-import {
-  GetUserInfo,
-  ChangeFollow,
-  GetListPosts,
-  GetListResponses,
-  GetListMultimed,
-  GetListLikes,
-} from "../api/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { GetUserInfo, ChangeFollow } from "../api/api";
 import EditProfile from "../contents/EditProfile";
 
 function Profile() {
+  const queryClient = useQueryClient();
   const params = useParams();
   const { userInfo } = useUserDetails();
   const [isActive, setIsActive] = useState("/home");
   const [scroll, setScroll] = useState(0);
   const [isEditingUser, setIsEditingUser] = useState(false);
-  const [queryAgain, setQueryAgain] = useState(false);
   const location = useLocation();
+
   const {
     data: userInfomation,
     isError,
     isLoading,
-  } = useQuery({
-    queryKey: ["user", params.userNameId, userInfo.accessToken, queryAgain],
-    queryFn: ({ queryKey }) =>
-      GetUserInfo({ url: queryKey[1], accessToken: queryKey[2] }),
-    select: (data) => data.data,
-  });
-  const {
-    data: information,
-    isSuccess,
-    isLoading: LoadingFunct,
-  } = useQuery({
-    queryKey: ["list", params.userNameId, userInfo.accessToken, location],
-    queryFn: ({ queryKey }) => {
-      if (location.pathname.match(/post/))
-        return GetListPosts({
-          accessToken: queryKey[2],
-          name_tag: queryKey[1],
-        });
-      else if (location.pathname.match(/responses/))
-        return GetListResponses({
-          accessToken: queryKey[2],
-          name_tag: queryKey[1],
-        });
-      else if (location.pathname.match(/pictures-and-videos/))
-        return GetListMultimed({
-          accessToken: queryKey[2],
-          name_tag: queryKey[1],
-        });
-      else
-        return GetListLikes({
-          accessToken: queryKey[2],
-          name_tag: queryKey[1],
-        });
-    },
-  });
+  } = useQuery(
+    getUserInformationQueryOptions(params.userNameId, userInfo.accessToken)
+  );
+
   //Scrolls
   useEffect(() => {
     const handleScroll = () => {
@@ -87,9 +48,11 @@ function Profile() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [scroll]);
+
   useEffect(() => {
     setIsActive(location.pathname);
   }, [location, params.userNameId, userInfomation]);
+
   //Handlers
   const handleFollow = () => {
     ChangeFollow({
@@ -99,34 +62,23 @@ function Profile() {
         follow: userInfomation.followed,
       },
     }).then(() => {
-      setQueryAgain(!queryAgain);
+      queryClient.setQueryData(["user", params.userNameId], (oldData) => {
+        console.log(oldData);
+        return {
+          data: {
+            ...oldData.data, // Asegúrate de respetar la estructura original
+            followed: !oldData.data.followed, // Modifica aquí los datos originales
+            followers: oldData.data.followed
+              ? oldData.data.followers - 1
+              : oldData.data.followers + 1,
+          },
+        };
+      });
     });
   };
-  const conditionalRender = () => {
-    if (LoadingFunct)
-      return (
-        <div className=" flex items-center justify-center w-full h-full">
-          <CircularProgress aria-label="Loading..." size="lg" />
-          <h1 className=" text-center text-xl">Cargando</h1>
-        </div>
-      );
-    else if (isSuccess) {
-      if (information.data.length) {
-        return information.data.map((e, index) => {
-          return <Publication info={e} key={index} commentPost={false} />;
-        });
-      } else {
-        return (
-          <div className=" flex items-center justify-center w-full h-full">
-            <h1 className=" text-center text-xl">No hay tweets para mostrar</h1>
-          </div>
-        );
-      }
-    } else {
-      return <h1>Error al obtener los datos</h1>;
-    }
-  };
+
   if (isLoading) return <div>Cargando...</div>;
+
   return (
     <div className=" w-full h-screen z-10 min-h-[300px] overflow-y-auto scrollbar-hide">
       {/*Editing User */}
@@ -158,11 +110,15 @@ function Profile() {
         }`}
       >
         <img
-          src={`http://localhost:8000/feather${userInfomation.background_pic}`}
+          src={`${import.meta.env.VITE_API_URL}feather${
+            userInfomation.background_pic
+          }`}
           className=" w-full h-24 sm:h-40 object-cover"
         ></img>
         <Avatar
-          src={`http://localhost:8000/feather${userInfomation.profile_pic}`}
+          src={`${import.meta.env.VITE_API_URL}feather${
+            userInfomation.profile_pic
+          }`}
           className="h-14 w-14 mt-1 ml-3 relative -top-8 ring-4 ring-white object-cover"
         />
         {userInfo.name_tag == userInfomation.name_tag ? (
@@ -288,11 +244,19 @@ function Profile() {
         </div>
       </div>
       {/*Parte inferior paginado de tweets*/}
-      <div className="w-full h-full pb-14 sm:p-0" id="scroll-component">
-        {conditionalRender()}
+      <div className="w-full pb-14 sm:p-0" id="scroll-component">
+        <Outlet />
       </div>
     </div>
   );
+}
+
+function getUserInformationQueryOptions(userNameId, accessToken) {
+  return {
+    queryKey: ["user", userNameId],
+    queryFn: () => GetUserInfo({ url: userNameId, accessToken }),
+    select: (data) => data.data,
+  };
 }
 
 export default Profile;

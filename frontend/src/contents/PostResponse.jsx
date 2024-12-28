@@ -126,7 +126,9 @@ function PostResponse({ setIsCommentingProp, info, commentPost }) {
             {/*TextArea*/}
             <div className="flex w-full">
               <Avatar
-                src={`http://localhost:8000/feather${userInfo.profile_pic}`}
+                src={`${import.meta.env.VITE_API_URL}feather${
+                  userInfo.profile_pic
+                }`}
                 className="h-14 w-14 relative ml-2 ring-4 ring-white sm:max-w-1/4"
               ></Avatar>
               <div className="flex flex-col w-[85%] ">

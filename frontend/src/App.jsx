@@ -16,21 +16,20 @@ function App() {
     <UserDetailsProvider>
       <NextUIProvider navigate={navigate}>
         <Routes>
-          <Route path="/login" element={<LoginPage />}></Route>
-          <Route path="/register" element={<RegisterPage />}></Route>
+          <Route path="login" element={<LoginPage />}></Route>
+          <Route path="register" element={<RegisterPage />}></Route>
           <Route
-            path="/verify-user/:userSecret"
+            path="verify-user/:userSecret"
             element={<VerificationPage />}
           ></Route>
           <Route
-            path="/recover-password"
+            path="recover-password"
             element={<RecoverPasswordPage />}
           ></Route>
           <Route
-            path="/recover-password/:passwordSecret"
+            path="recover-password/:passwordSecret"
             element={<NewPasswordPage />}
           ></Route>
-
           <Route path="*" element={<WorkPage />}></Route>
         </Routes>
       </NextUIProvider>
