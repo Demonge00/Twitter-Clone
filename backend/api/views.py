@@ -1,5 +1,7 @@
 "Vistas de la API"
+
 import os
+from rest_framework.fields import ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,6 +20,8 @@ from api.serializers import UserSerializer, PublicationInformationSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from api.services.publications import like_publication
 
 User = get_user_model()
 
@@ -56,15 +60,19 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     "Vista del serializer"
+
     serializer_class = MyTokenObtainPairSerializer
 
 
 class Protection(APIView):
-    "Seguridad contra ausencia de token"
+    """
+    Seguridad contra ausencia de token
+    """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        "Respuesta de seguridad"
+        """Respuesta de seguridad"""
         return Response(status=status.HTTP_200_OK)
 
 
@@ -73,6 +81,7 @@ class Protection(APIView):
 
 class UserViewSet(viewsets.ModelViewSet):
     "Vista de usuario"
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated | ReadOnlyorPost]
@@ -141,13 +150,6 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         user = self.perform_update(serializer)
         access_token = RefreshToken.for_user(self.request.user)
-        access_token["name"] = self.request.user.name
-        access_token["name_tag"] = self.request.user.name_tag
-        if user.profile_pic:
-            pick = user.profile_pic.url
-        else:
-            pick = None
-        access_token["profile_pic"] = pick
         return Response(
             {"access": str(access_token.access_token), "refresh": str(access_token)},
             status=status.HTTP_200_OK,
@@ -159,22 +161,17 @@ class UserViewSet(viewsets.ModelViewSet):
         try:
             user = User.objects.get(id=request.user.id)
             followed_user = User.objects.get(name_tag=request.data["name_tag"])
-            follow_unfollow = request.data["follow"]
-            if follow_unfollow is False:
+            user_does_follow = request.data["follow"]
+            if not user_does_follow:
                 user.follow.add(followed_user)
                 answer = True
             else:
                 user.follow.remove(followed_user)
                 answer = False
             user.save()
-            return Response(
-                {"message": "Relation Created", "followed": answer},
-                status=status.HTTP_200_OK,
-            )
+            return Response({"message": "Relation Created", "followed": answer})
         except Exception as e:
-            return Response(
-                {"message": "Unable to relate" + e}, status=status.HTTP_400_BAD_REQUEST
-            )
+            raise ValidationError({"message": "Unable to relate" + e})
 
 
 class PasswordRecoverList(APIView):
@@ -195,15 +192,12 @@ class PasswordRecoverList(APIView):
                 {"message": "Password recuperado"}, status=status.HTTP_200_OK
             )
         except Exception as e:
-            return Response(
-                {"message": "Email no existe" + e}, status=status.HTTP_400_BAD_REQUEST
-            )
+            raise ValidationError({"message": "Email no existe" + e})
 
     def put(self, request, password_secret=None, format=None):
         try:
             user = User.objects.get(password_secret=password_secret)
-            user.password = make_password(request.data["password"])
-            user.save()
+            user.set_password(request.data["password"])
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"message": "Error"}, status=status.HTTP_400_BAD_REQUEST)
@@ -213,9 +207,7 @@ class PasswordRecoverList(APIView):
 def VerifyUser(request, verification_secret):
     try:
         user = User.objects.get(verification_secret=verification_secret)
-        user.is_verified = True
-        user.is_active = True
-        user.save()
+        user.verify()
         return Response({"message": "user_registered"}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(
@@ -232,8 +224,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
 
     def get_serializer(self, *args, **kwargs):
         user = User.objects.get(id=self.request.user.id)
-        kwargs["context"] = {"owner": user}
-        return super().get_serializer(*args, **kwargs)
+        return super().get_serializer(*args, **kwargs, context={"owner": user})
 
     def get_object(self):
         publication = Publication.objects.get(id=self.kwargs["pub_id"])
@@ -268,18 +259,9 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     def like(self, request):
         "Accion de dar like"
         try:
-            user = User.objects.get(id=request.user.id)
-            liked_publication = Publication.objects.get(id=request.data["pub_id"])
-            liked = request.data["liked"]
-            if liked is False:
-                user.likes.add(liked_publication)
-            else:
-
-                user.likes.remove(liked_publication)
-            user.save()
+            like_publication(request.user, request.data["pub_id"])
             return Response(
                 {"message": "Relation Created", "is_liked": liked},
-                status=status.HTTP_200_OK,
             )
         except Exception as e:
             return Response(
@@ -296,7 +278,6 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
             if retweeted is False:
                 user.retweets.add(retweeted_publication)
             else:
-
                 user.retweets.remove(retweeted_publication)
             user.save()
 
@@ -319,7 +300,6 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
             if bookmarked is False:
                 user.bookmarks.add(bookmarked_publication)
             else:
-
                 user.bookmarks.remove(bookmarked_publication)
             user.save()
 
@@ -335,7 +315,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     @action(
         detail=False,
         permission_classes=[IsAuthenticated],
-        url_path="list/follows",
+        url_path="list-follows",
     )
     def listing_follows(self, request):
         "Listar tweets de seguidos"
@@ -362,7 +342,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     @action(
         detail=False,
         permission_classes=[IsAuthenticated],
-        url_path="list/for_you",
+        url_path="list-for-you",
     )
     def listing_for_you(self, request):
         "Listar tweets para ti"
@@ -391,7 +371,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     @action(
         detail=False,
         permission_classes=[IsAuthenticated],
-        url_path="list/for_you_all",
+        url_path="list-for-you-all",
     )
     def listing_for_you_all(self, request):
         "Listar todos los tweets para ti"
@@ -411,9 +391,9 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     @action(
         detail=False,
         permission_classes=[IsAuthenticated],
-        url_path="list/tendences",
+        url_path="list-tendences",
     )
-    def listing_tendences(self, request):
+    def listing_tendencies(self, request):
         "Listar tweets tendencias"
         try:
             user = User.objects.get(id=request.user.id)
@@ -433,7 +413,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     @action(
         detail=False,
         permission_classes=[IsAuthenticated],
-        url_path="list/bookmarks",
+        url_path="list-bookmarks",
     )
     def listing_bookmarks(self, request):
         "Listar tweets guardados"
@@ -473,7 +453,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     @action(
         detail=True,
         permission_classes=[IsAuthenticated],
-        url_path="list/responses",
+        url_path="list-responses",
     )
     def listing_profile_responses(self, request, pub_id=None):
         "Listar respuestas de perfil"
@@ -492,7 +472,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     @action(
         detail=True,
         permission_classes=[IsAuthenticated],
-        url_path="list/multimedia",
+        url_path="list-multimedia",
     )
     def listing_profile_multimedia(self, request, pub_id=None):
         "Listar multimedia de perfil"
@@ -513,7 +493,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     @action(
         detail=True,
         permission_classes=[IsAuthenticated],
-        url_path="list/likes",
+        url_path="list-likes",
     )
     def listing_profile_likes(self, request, pub_id=None):
         "Listar likes de perfil"

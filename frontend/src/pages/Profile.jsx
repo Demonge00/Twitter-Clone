@@ -33,20 +33,20 @@ function Profile() {
   const [isEditingUser, setIsEditingUser] = useState(false);
   const [queryAgain, setQueryAgain] = useState(false);
   const location = useLocation();
+
   const {
     data: userInfomation,
     isError,
+    refetch,
     isLoading,
-  } = useQuery({
-    queryKey: ["user", params.userNameId, userInfo.accessToken, queryAgain],
-    queryFn: ({ queryKey }) =>
-      GetUserInfo({ url: queryKey[1], accessToken: queryKey[2] }),
-    select: (data) => data.data,
-  });
+  } = useQuery(
+    getUserInformationQueryOptions(params.userNameId, userInfo.accessToken),
+  );
+
   const {
     data: information,
     isSuccess,
-    isLoading: LoadingFunct,
+    isLoading: loadingInfo,
   } = useQuery({
     queryKey: ["list", params.userNameId, userInfo.accessToken, location],
     queryFn: ({ queryKey }) => {
@@ -72,6 +72,7 @@ function Profile() {
         });
     },
   });
+
   //Scrolls
   useEffect(() => {
     const handleScroll = () => {
@@ -87,9 +88,11 @@ function Profile() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [scroll]);
+
   useEffect(() => {
     setIsActive(location.pathname);
   }, [location, params.userNameId, userInfomation]);
+
   //Handlers
   const handleFollow = () => {
     ChangeFollow({
@@ -100,10 +103,12 @@ function Profile() {
       },
     }).then(() => {
       setQueryAgain(!queryAgain);
+      refetch();
     });
   };
-  const conditionalRender = () => {
-    if (LoadingFunct)
+
+  const mainPart = () => {
+    if (loadingInfo)
       return (
         <div className=" flex items-center justify-center w-full h-full">
           <CircularProgress aria-label="Loading..." size="lg" />
@@ -126,7 +131,9 @@ function Profile() {
       return <h1>Error al obtener los datos</h1>;
     }
   };
+
   if (isLoading) return <div>Cargando...</div>;
+
   return (
     <div className=" w-full h-screen z-10 min-h-[300px] overflow-y-auto scrollbar-hide">
       {/*Editing User */}
@@ -293,10 +300,33 @@ function Profile() {
       </div>
       {/*Parte inferior paginado de tweets*/}
       <div className="w-full h-full pb-14 sm:p-0" id="scroll-component">
-        {conditionalRender()}
+        {mainPart()}
       </div>
     </div>
   );
 }
 
+function getUserInformationQueryOptions(userNameId, accessToken) {
+  return {
+    queryKey: ["user", userNameId],
+    queryFn: () => GetUserInfo({ url: userNameId, accessToken }),
+    select: (data) => data.data,
+  };
+}
+
+function getListPostsQueryOptions(userNameId, accessToken) {
+  return {
+    queryKey: ["list-posts", userNameId],
+    queyFn: () => GetListPosts({ accessToken, name_tag: userNameId }),
+  };
+}
+
 export default Profile;
+
+function createPost(queryClient, message, userName, threadId) {
+  const queryClient  = useQueryClient();
+
+  CreatePost({...}, {onSuccess: (post) => {
+    queryClient.setQueryData(["comments", postId], oldData => ([...oldData, post]))
+  }})
+}

@@ -81,6 +81,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return len(self.followed_by.all())
 
 
+    def set_password(self, password):
+        self.password = make_password(password)
+        self.save()
+
+    def verify(self):
+        self.is_verified = True
+        self.is_active = True
+        self.save()
+
+
 class Publication(models.Model):
     creator = models.ForeignKey(
         CustomUser, on_delete=models.CASCADE, related_name="publications"
@@ -113,3 +123,5 @@ class Publication(models.Model):
 
     def comments(self):
         return self.responses.count()
+
+
