@@ -196,7 +196,7 @@ class PasswordRecoverList(APIView):
     def put(self, request, password_secret=None, format=None):
         try:
             user = User.objects.get(password_secret=password_secret)
-            user.set_password(request.data["password"])
+            user.set_user_password(request.data["password"])
             return Response(status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"message": "Error"}, status=status.HTTP_400_BAD_REQUEST)
