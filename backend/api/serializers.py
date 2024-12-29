@@ -46,6 +46,9 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+    def update(self, instance, validated_data):
+        pass
+
 
 class PublicationInformationSerializer(serializers.ModelSerializer):
     views = serializers.IntegerField(read_only=True)
@@ -156,10 +159,8 @@ class PublicationInformationSerializer(serializers.ModelSerializer):
         return False
 
     def get_is_commented(self, obj):
-        if self.context.get("owner"):
-            if self.context.get("owner") in obj.commented_by.all():
-                return True
-        return False
+        owner = self.context.get("owner")
+        return owner and owner in obj.commented_by.all()
 
     def get_is_retweet(self, obj):
         if self.context.get("owner"):

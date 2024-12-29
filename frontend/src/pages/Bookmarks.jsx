@@ -9,6 +9,7 @@ import { CircularProgress } from "@nextui-org/progress";
 import Publication from "../contents/Publication";
 import { GetListBookmarked } from "../api/api";
 import { useUserDetails } from "../contents/UserContext";
+
 function Bookmarks() {
   const { userInfo } = useUserDetails();
   const [isActive, setIsActive] = useState("/home");
