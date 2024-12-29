@@ -8,11 +8,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@nextui-org/link";
 import { Avatar } from "@nextui-org/avatar";
-import { useLocation, useParams } from "react-router-dom";
+import { Route, Routes, useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { useUserDetails } from "../contents/UserContext";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { CircularProgress } from "@nextui-org/progress";
 import Publication from "../contents/Publication";
 import {
@@ -26,52 +26,50 @@ import {
 import EditProfile from "../contents/EditProfile";
 
 function Profile() {
+  const queryClient = useQueryClient();
   const params = useParams();
   const { userInfo } = useUserDetails();
   const [isActive, setIsActive] = useState("/home");
   const [scroll, setScroll] = useState(0);
   const [isEditingUser, setIsEditingUser] = useState(false);
-  const [queryAgain, setQueryAgain] = useState(false);
   const location = useLocation();
 
   const {
     data: userInfomation,
     isError,
-    refetch,
     isLoading,
   } = useQuery(
-    getUserInformationQueryOptions(params.userNameId, userInfo.accessToken),
+    getUserInformationQueryOptions(params.userNameId, userInfo.accessToken)
   );
 
   const {
-    data: information,
-    isSuccess,
-    isLoading: loadingInfo,
-  } = useQuery({
-    queryKey: ["list", params.userNameId, userInfo.accessToken, location],
-    queryFn: ({ queryKey }) => {
-      if (location.pathname.match(/post/))
-        return GetListPosts({
-          accessToken: queryKey[2],
-          name_tag: queryKey[1],
-        });
-      else if (location.pathname.match(/responses/))
-        return GetListResponses({
-          accessToken: queryKey[2],
-          name_tag: queryKey[1],
-        });
-      else if (location.pathname.match(/pictures-and-videos/))
-        return GetListMultimed({
-          accessToken: queryKey[2],
-          name_tag: queryKey[1],
-        });
-      else
-        return GetListLikes({
-          accessToken: queryKey[2],
-          name_tag: queryKey[1],
-        });
-    },
-  });
+    data: listPost,
+    isSuccess: successPost,
+    isLoading: loadingPost,
+  } = useQuery(
+    getListPostsQueryOptions(params.userNameId, userInfo.accessToken)
+  );
+  const {
+    data: listResponses,
+    isSuccess: successResponses,
+    isLoading: loadingResponses,
+  } = useQuery(
+    getListResponsesQueryOptions(params.userNameId, userInfo.accessToken)
+  );
+  const {
+    data: listLikes,
+    isSuccess: successLikes,
+    isLoading: loadingLikes,
+  } = useQuery(
+    getListLikesQueryOptions(params.userNameId, userInfo.accessToken)
+  );
+  const {
+    data: listMultimedia,
+    isSuccess: successMultimedia,
+    isLoading: loadingMultimedia,
+  } = useQuery(
+    getListMultimediaQueryOptions(params.userNameId, userInfo.accessToken)
+  );
 
   //Scrolls
   useEffect(() => {
@@ -102,12 +100,22 @@ function Profile() {
         follow: userInfomation.followed,
       },
     }).then(() => {
-      setQueryAgain(!queryAgain);
-      refetch();
+      queryClient.setQueryData(["user", params.userNameId], (oldData) => {
+        console.log(oldData);
+        return {
+          data: {
+            ...oldData.data, // Asegúrate de respetar la estructura original
+            followed: !oldData.data.followed, // Modifica aquí los datos originales
+            followers: oldData.data.followed
+              ? oldData.data.followers - 1
+              : oldData.data.followers + 1,
+          },
+        };
+      });
     });
   };
 
-  const mainPart = () => {
+  const mainPart = (tweetList, loadingInfo, isSuccess) => {
     if (loadingInfo)
       return (
         <div className=" flex items-center justify-center w-full h-full">
@@ -116,8 +124,8 @@ function Profile() {
         </div>
       );
     else if (isSuccess) {
-      if (information.data.length) {
-        return information.data.map((e, index) => {
+      if (tweetList.data.length) {
+        return tweetList.data.map((e, index) => {
           return <Publication info={e} key={index} commentPost={false} />;
         });
       } else {
@@ -300,7 +308,32 @@ function Profile() {
       </div>
       {/*Parte inferior paginado de tweets*/}
       <div className="w-full h-full pb-14 sm:p-0" id="scroll-component">
-        {mainPart()}
+        <Routes>
+          <Route
+            path="/post"
+            element={mainPart(listPost, loadingPost, successPost)}
+          />
+          <Route
+            path="/responses"
+            element={mainPart(
+              listResponses,
+              loadingResponses,
+              successResponses
+            )}
+          />
+          <Route
+            path="/pictures-and-videos"
+            element={mainPart(
+              listMultimedia,
+              loadingMultimedia,
+              successMultimedia
+            )}
+          />
+          <Route
+            path="/likes"
+            element={mainPart(listLikes, loadingLikes, successLikes)}
+          />
+        </Routes>
       </div>
     </div>
   );
@@ -314,19 +347,29 @@ function getUserInformationQueryOptions(userNameId, accessToken) {
   };
 }
 
-function getListPostsQueryOptions(userNameId, accessToken) {
+function getListPostsQueryOptions(name_tag, accessToken) {
   return {
-    queryKey: ["list-posts", userNameId],
-    queyFn: () => GetListPosts({ accessToken, name_tag: userNameId }),
+    queryKey: ["list-posts", name_tag],
+    queryFn: () => GetListPosts({ accessToken, name_tag }),
+  };
+}
+function getListLikesQueryOptions(userNameId, accessToken) {
+  return {
+    queryKey: ["list-likes", userNameId],
+    queryFn: () => GetListLikes({ accessToken, name_tag: userNameId }),
+  };
+}
+function getListMultimediaQueryOptions(userNameId, accessToken) {
+  return {
+    queryKey: ["list-multimedia", userNameId],
+    queryFn: () => GetListMultimed({ accessToken, name_tag: userNameId }),
+  };
+}
+function getListResponsesQueryOptions(userNameId, accessToken) {
+  return {
+    queryKey: ["list-responses", userNameId],
+    queryFn: () => GetListResponses({ accessToken, name_tag: userNameId }),
   };
 }
 
 export default Profile;
-
-function createPost(queryClient, message, userName, threadId) {
-  const queryClient  = useQueryClient();
-
-  CreatePost({...}, {onSuccess: (post) => {
-    queryClient.setQueryData(["comments", postId], oldData => ([...oldData, post]))
-  }})
-}

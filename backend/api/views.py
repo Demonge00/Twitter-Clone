@@ -10,7 +10,6 @@ from rest_framework.decorators import api_view, action
 from rest_framework.permissions import IsAuthenticated, BasePermission
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-from django.contrib.auth.hashers import make_password
 from django.db.models import Q, F, Count
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
@@ -148,7 +147,7 @@ class UserViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
-        user = self.perform_update(serializer)
+        self.perform_update(serializer)
         access_token = RefreshToken.for_user(self.request.user)
         return Response(
             {"access": str(access_token.access_token), "refresh": str(access_token)},
@@ -171,7 +170,7 @@ class UserViewSet(viewsets.ModelViewSet):
             user.save()
             return Response({"message": "Relation Created", "followed": answer})
         except Exception as e:
-            raise ValidationError({"message": "Unable to relate" + e})
+            raise ValidationError({"message": "Unable to relate" + e}) from e
 
 
 class PasswordRecoverList(APIView):
@@ -259,9 +258,11 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     def like(self, request):
         "Accion de dar like"
         try:
-            like_publication(request.user, request.data["pub_id"])
+            like = like_publication(
+                request.user, request.data["pub_id"], request.data["liked"]
+            )
             return Response(
-                {"message": "Relation Created", "is_liked": liked},
+                {"message": "Relation Created", "is_liked": like},
             )
         except Exception as e:
             return Response(
@@ -430,7 +431,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     @action(
         detail=True,
         permission_classes=[IsAuthenticated],
-        url_path="list/posts",
+        url_path="list-posts",
     )
     def listing_profile_post(self, request, pub_id=None):
         "Listar tweets de perfil"
