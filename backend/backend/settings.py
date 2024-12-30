@@ -139,7 +139,11 @@ REST_FRAMEWORK = {
     )
 }
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:5173", "https://tweete-clone.vercel.app"]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://tweete-clone.vercel.app",
+    "http://localhost:4173",
+]
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),

@@ -8,21 +8,12 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@nextui-org/link";
 import { Avatar } from "@nextui-org/avatar";
-import { Route, Routes, useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button } from "@nextui-org/react";
 import { useUserDetails } from "../contents/UserContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { CircularProgress } from "@nextui-org/progress";
-import Publication from "../contents/Publication";
-import {
-  GetUserInfo,
-  ChangeFollow,
-  GetListPosts,
-  GetListResponses,
-  GetListMultimed,
-  GetListLikes,
-} from "../api/api";
+import { GetUserInfo, ChangeFollow } from "../api/api";
 import EditProfile from "../contents/EditProfile";
 
 function Profile() {
@@ -40,35 +31,6 @@ function Profile() {
     isLoading,
   } = useQuery(
     getUserInformationQueryOptions(params.userNameId, userInfo.accessToken)
-  );
-
-  const {
-    data: listPost,
-    isSuccess: successPost,
-    isLoading: loadingPost,
-  } = useQuery(
-    getListPostsQueryOptions(params.userNameId, userInfo.accessToken)
-  );
-  const {
-    data: listResponses,
-    isSuccess: successResponses,
-    isLoading: loadingResponses,
-  } = useQuery(
-    getListResponsesQueryOptions(params.userNameId, userInfo.accessToken)
-  );
-  const {
-    data: listLikes,
-    isSuccess: successLikes,
-    isLoading: loadingLikes,
-  } = useQuery(
-    getListLikesQueryOptions(params.userNameId, userInfo.accessToken)
-  );
-  const {
-    data: listMultimedia,
-    isSuccess: successMultimedia,
-    isLoading: loadingMultimedia,
-  } = useQuery(
-    getListMultimediaQueryOptions(params.userNameId, userInfo.accessToken)
   );
 
   //Scrolls
@@ -113,31 +75,6 @@ function Profile() {
         };
       });
     });
-  };
-
-  const mainPart = (tweetList, loadingInfo, isSuccess) => {
-    if (loadingInfo)
-      return (
-        <div className=" flex items-center justify-center w-full h-full">
-          <CircularProgress aria-label="Loading..." size="lg" />
-          <h1 className=" text-center text-xl">Cargando</h1>
-        </div>
-      );
-    else if (isSuccess) {
-      if (tweetList.data.length) {
-        return tweetList.data.map((e, index) => {
-          return <Publication info={e} key={index} commentPost={false} />;
-        });
-      } else {
-        return (
-          <div className=" flex items-center justify-center w-full h-full">
-            <h1 className=" text-center text-xl">No hay tweets para mostrar</h1>
-          </div>
-        );
-      }
-    } else {
-      return <h1>Error al obtener los datos</h1>;
-    }
   };
 
   if (isLoading) return <div>Cargando...</div>;
@@ -308,32 +245,7 @@ function Profile() {
       </div>
       {/*Parte inferior paginado de tweets*/}
       <div className="w-full h-full pb-14 sm:p-0" id="scroll-component">
-        <Routes>
-          <Route
-            path="/post"
-            element={mainPart(listPost, loadingPost, successPost)}
-          />
-          <Route
-            path="/responses"
-            element={mainPart(
-              listResponses,
-              loadingResponses,
-              successResponses
-            )}
-          />
-          <Route
-            path="/pictures-and-videos"
-            element={mainPart(
-              listMultimedia,
-              loadingMultimedia,
-              successMultimedia
-            )}
-          />
-          <Route
-            path="/likes"
-            element={mainPart(listLikes, loadingLikes, successLikes)}
-          />
-        </Routes>
+        <Outlet />
       </div>
     </div>
   );
@@ -344,31 +256,6 @@ function getUserInformationQueryOptions(userNameId, accessToken) {
     queryKey: ["user", userNameId],
     queryFn: () => GetUserInfo({ url: userNameId, accessToken }),
     select: (data) => data.data,
-  };
-}
-
-function getListPostsQueryOptions(name_tag, accessToken) {
-  return {
-    queryKey: ["list-posts", name_tag],
-    queryFn: () => GetListPosts({ accessToken, name_tag }),
-  };
-}
-function getListLikesQueryOptions(userNameId, accessToken) {
-  return {
-    queryKey: ["list-likes", userNameId],
-    queryFn: () => GetListLikes({ accessToken, name_tag: userNameId }),
-  };
-}
-function getListMultimediaQueryOptions(userNameId, accessToken) {
-  return {
-    queryKey: ["list-multimedia", userNameId],
-    queryFn: () => GetListMultimed({ accessToken, name_tag: userNameId }),
-  };
-}
-function getListResponsesQueryOptions(userNameId, accessToken) {
-  return {
-    queryKey: ["list-responses", userNameId],
-    queryFn: () => GetListResponses({ accessToken, name_tag: userNameId }),
   };
 }
 

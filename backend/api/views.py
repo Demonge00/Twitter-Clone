@@ -258,15 +258,15 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     def like(self, request):
         "Accion de dar like"
         try:
-            like = like_publication(
-                request.user, request.data["pub_id"], request.data["liked"]
-            )
+            user = User.objects.get(id=request.user.id)
+            like = like_publication(user, request.data["pub_id"], request.data["liked"])
             return Response(
                 {"message": "Relation Created", "is_liked": like},
             )
         except Exception as e:
             return Response(
-                {"message": "Unable to relate" + e}, status=status.HTTP_400_BAD_REQUEST
+                {"message": "Unable to relate" + str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
     @action(detail=False, methods=["post"], permission_classes=[IsAuthenticated])
@@ -503,6 +503,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
             publication_list = user.likes.filter(response_of=None).order_by(
                 "-creation_date"
             )[:20]
+
             serializer = PublicationInformationSerializer(
                 publication_list, context={"owner": user}, many=True
             )
@@ -513,7 +514,7 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
     @action(
         detail=True,
         permission_classes=[IsAuthenticated],
-        url_path="list/tweet-responses",
+        url_path="list-tweet-responses",
     )
     def listing_tweet_responses(self, request, pub_id=None):
         "Listar respuestas de tweet"

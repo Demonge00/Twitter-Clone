@@ -13,6 +13,14 @@ import { useUserDetails } from "../contents/UserContext";
 import { OpacityContext } from "../contents/OpacityContext";
 import { Security, TryRefreshToken } from "../api/api";
 import PublicationPage from "./PublicationPage";
+import ProfilePostsList from "../contents/ProfilePostsList";
+import ProfileResponsesList from "../contents/ProfileResponsesList";
+import ProfileMultimediaList from "../contents/ProfileMultimediaList";
+import ProfileLikeList from "../contents/ProfileLikeList";
+import ForYouTweetsList from "../contents/ForYouTweetsList";
+import FollowsTweetsList from "../contents/FollowsTweetsList";
+import ForYouAllTweetsList from "../contents/ForYouAllTweetsList";
+import TendenciesTweetsList from "../contents/TendenciesTweetsList";
 
 function WorkPage() {
   const location = useLocation();
@@ -27,6 +35,7 @@ function WorkPage() {
           updateUserInfo(false, false);
         });
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location]);
 
   return (
@@ -38,42 +47,44 @@ function WorkPage() {
         <div className=" h-screen sm:mr-10 lg:mr-0 border-r w-full xl:min-w-[550px]">
           <Navbar />
           <Routes>
-            <Route path="/publication/:pubId" element={<PublicationPage />} />
-            <Route path="/home" element={<Homepage />}>
-              <Route path="/home/para_ti" element={<Homepage />}></Route>
-              <Route path="/home/seguidos" element={<Homepage />}></Route>
-            </Route>
-            <Route path="/search" element={<Search />}>
-              <Route path="/search/para_ti" element={<Search />}></Route>
-              <Route path="/search/tendencias" element={<Search />}></Route>
-              <Route path="/search/noticias" element={<Search />}></Route>
-              <Route path="/search/deportes" element={<Search />}></Route>
+            <Route path="publication/:pubId" element={<PublicationPage />} />
+            <Route path="home" element={<Homepage />}>
+              <Route index element={<ForYouTweetsList />}></Route>
               <Route
-                path="/search/entretenimiento"
-                element={<Search />}
+                index
+                path="para_ti"
+                element={<ForYouTweetsList />}
               ></Route>
+              <Route path="seguidos" element={<FollowsTweetsList />}></Route>
             </Route>
-            <Route path="/notifications" element={<Notifications />}>
-              <Route path="/notifications/todas" />
-              <Route path="/notifications/verificado" />
-              <Route path="/notifications/menciones" />
-            </Route>
-            <Route path="/messages" element={<Messages />}></Route>
-            <Route path="/comunity" element={<Comunity />}></Route>
-            <Route path="/bookmarks" element={<Bookmarks />}></Route>
-            <Route path="/profile/:userNameId" element={<Profile />}>
-              <Route path="/profile/:userNameId/post" element={<Profile />} />
+            <Route path="search" element={<Search />}>
+              <Route path="para_ti" element={<ForYouAllTweetsList />}></Route>
               <Route
-                path="/profile/:userNameId/responses"
-                element={<Profile />}
-              />
-              <Route
-                path="/profile/:userNameId/pictures-and-videos"
-                element={<Profile />}
-              />
-              <Route path="/profile/:userNameId/likes" element={<Profile />} />
+                path="tendencias"
+                element={<TendenciesTweetsList />}
+              ></Route>
+              <Route path="noticias" element={<Search />}></Route>
+              <Route path="deportes" element={<Search />}></Route>
+              <Route path="entretenimiento" element={<Search />}></Route>
             </Route>
-            <Route path="/settings"></Route>
+            <Route path="notifications" element={<Notifications />}>
+              <Route path="todas" />
+              <Route path="verificado" />
+              <Route path="menciones" />
+            </Route>
+            <Route path="messages" element={<Messages />}></Route>
+            <Route path="comunity" element={<Comunity />}></Route>
+            <Route path="bookmarks" element={<Bookmarks />}></Route>
+            <Route path="profile/:userNameId" element={<Profile />}>
+              <Route path="post" element={<ProfilePostsList />} />
+              <Route path="responses" element={<ProfileResponsesList />} />
+              <Route
+                path="pictures-and-videos"
+                element={<ProfileMultimediaList />}
+              />
+              <Route path="likes" element={<ProfileLikeList />} />
+            </Route>
+            <Route path="settings"></Route>
           </Routes>
         </div>
         <div className="flex flex-col border rounded-lg">

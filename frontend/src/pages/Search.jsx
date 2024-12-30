@@ -6,14 +6,10 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@nextui-org/link";
 import { Avatar } from "@nextui-org/avatar";
-import { useLocation } from "react-router-dom";
+import { useLocation, Outlet } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useUserDetails } from "../contents/UserContext";
 import { OpacitySetter } from "../contents/OpacityContext";
-import { GetListForYouAll, GetListTendences } from "../api/api";
-import { useQuery } from "@tanstack/react-query";
-import { CircularProgress } from "@nextui-org/progress";
-import Publication from "../contents/Publication";
 
 import Display from "../contents/NavList";
 
@@ -28,52 +24,6 @@ function Search() {
     /*Opacity Handle*/
   }
   OpacitySetter();
-  {
-    /*Request*/
-  }
-  const {
-    data: information,
-    isLoading,
-    isSuccess,
-  } = useQuery({
-    queryKey: ["search", userInfo.accessToken, location],
-    queryFn: ({ queryKey }) => {
-      if (location.pathname.match(/para_ti/))
-        return GetListForYouAll(queryKey[1]);
-      else if (location.pathname.match(/tendencias/))
-        return GetListTendences(queryKey[1]);
-      else return;
-    },
-  });
-  {
-    /*Conditional func*/
-  }
-  function ConditionalRender() {
-    if (isLoading) {
-      return (
-        <div className=" flex items-center justify-center w-full h-full">
-          <CircularProgress aria-label="Loading..." size="lg" />
-          <h1 className=" text-center text-xl">Cargando</h1>
-        </div>
-      );
-    } else if (isSuccess) {
-      return information.data.length ? (
-        information.data.map((e, index) => {
-          return <Publication info={e} key={index} />;
-        })
-      ) : (
-        <div className=" flex items-center justify-center w-full h-full">
-          <h1 className=" text-center text-xl">No hay tweets para mostrar</h1>
-        </div>
-      );
-    } else {
-      return (
-        <div className=" flex items-center justify-center w-full h-full">
-          <h1 className=" text-center text-xl">Error al cargar los tweets</h1>
-        </div>
-      );
-    }
-  }
   useEffect(() => {
     setIsActive(location.pathname);
   }, [location]);
@@ -192,7 +142,7 @@ function Search() {
         className="w-full h-full overflow-y-scroll scrollbar-hide pb-12 sm:p-0"
         id="scroll-component"
       >
-        {ConditionalRender()}
+        <Outlet />
       </div>
     </div>
   );
