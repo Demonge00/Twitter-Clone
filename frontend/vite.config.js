@@ -10,7 +10,8 @@ export default defineConfig(({ mode }) => {
     // Configuración de Vite
     plugins: [react()],
     define: {
-      __APP_ENV__: JSON.stringify(env.APP_ENV), // Define la variable global __APP_ENV__
+      __APP_ENV__: JSON.stringify(env.APP_ENV),
+      __API_URL__: JSON.stringify(env.VITE_API_URL), // Accede a la variable de entorno VITE_API_URL
     },
     base: "/",
     build: {
