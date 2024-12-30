@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => {
     define: {
       __APP_ENV__: JSON.stringify(env.APP_ENV), // Define la variable global __APP_ENV__
     },
+    base: "/",
     build: {
       outDir: "dist", // Carpeta de salida
     },
