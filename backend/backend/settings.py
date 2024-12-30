@@ -82,7 +82,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "backend.wsgi.application"
 
-load_dotenv()  # Cargar variables de entorno
+load_dotenv()
 
 tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 
