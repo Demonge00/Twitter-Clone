@@ -19,7 +19,7 @@ from django.conf import settings
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
@@ -198,6 +198,9 @@ SENDER_EMAIL = os.getenv("DJANGO_SENDER_EMAIL")
 
 # This setting informs Django of the URI path from which your static files will be served to users
 # Here, they well be accessible at your-domain.onrender.com/static/... or yourcustomdomain.com/static/...
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),  # Directorio de recursos estáticos en tu proyecto
+]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATIC_URL = "/static/"
