@@ -24,7 +24,6 @@ function Profile() {
   const [scroll, setScroll] = useState(0);
   const [isEditingUser, setIsEditingUser] = useState(false);
   const location = useLocation();
-
   const {
     data: userInfomation,
     isError,
@@ -32,7 +31,6 @@ function Profile() {
   } = useQuery(
     getUserInformationQueryOptions(params.userNameId, userInfo.accessToken)
   );
-
   //Scrolls
   useEffect(() => {
     const handleScroll = () => {
@@ -110,15 +108,11 @@ function Profile() {
         }`}
       >
         <img
-          src={`${import.meta.env.VITE_API_URL}feather${
-            userInfomation.background_pic
-          }`}
+          src={userInfomation.background_pic}
           className=" w-full h-24 sm:h-40 object-cover"
         ></img>
         <Avatar
-          src={`${import.meta.env.VITE_API_URL}feather${
-            userInfomation.profile_pic
-          }`}
+          src={userInfomation.profile_pic}
           className="h-14 w-14 mt-1 ml-3 relative -top-8 ring-4 ring-white object-cover"
         />
         {userInfo.name_tag == userInfomation.name_tag ? (

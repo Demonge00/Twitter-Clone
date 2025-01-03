@@ -20,9 +20,19 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 
+import cloudinary
+
+import cloudinary.uploader
+
 from api.services.publications import like_publication
 
 User = get_user_model()
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME", "tu-cloud-name"),
+    api_key=os.getenv("CLOUDINARY_API_KEY", "tu-api-key"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET", "tu-api-secret"),
+)
 
 
 class ReadOnlyorPost(BasePermission):
@@ -122,24 +132,18 @@ class UserViewSet(viewsets.ModelViewSet):
         profile_pic = None
         if "bg_image" in self.request.FILES:
             picture = self.request.FILES.get("bg_image")
-            file_name = picture.name
-            file_path = os.path.join(
-                settings.MEDIA_ROOT, "background", self.request.user.name_tag, file_name
-            )
-            if os.path.exists(file_path):
-                background_pic = file_path
-            else:
-                background_pic = picture
+            try:
+                upload_result = cloudinary.uploader.upload(picture)
+            except Exception as e:
+                return print(str(e))
+            background_pic = upload_result["secure_url"]
         if "prof_image" in self.request.FILES:
             picture = self.request.FILES.get("prof_image")
-            file_name = picture.name
-            file_path = os.path.join(
-                settings.MEDIA_ROOT, "profile", self.request.user.name_tag, file_name
-            )
-            if os.path.exists(file_path):
-                profile_pic = file_path
-            else:
-                profile_pic = picture
+            try:
+                upload_result = cloudinary.uploader.upload(picture)
+            except Exception as e:
+                return print(str(e))
+            profile_pic = upload_result["secure_url"]
         return serializer.save(background_pic=background_pic, profile_pic=profile_pic)
 
     def update(self, request, *args, **kwargs):
@@ -148,7 +152,14 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
+        user = User.objects.get(id=self.request.user.id)
         access_token = RefreshToken.for_user(self.request.user)
+        access_token["name"] = user.name
+        access_token["name_id"] = user.name_id
+        try:
+            print(access_token.name)
+        except Exception as e:
+            print(str(e))
         return Response(
             {"access": str(access_token.access_token), "refresh": str(access_token)},
             status=status.HTTP_200_OK,

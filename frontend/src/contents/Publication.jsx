@@ -129,9 +129,7 @@ function Publication({
             <Avatar
               as={Link}
               href={`/profile/${publicationInfo.name_tag}/post`}
-              src={`${import.meta.env.VITE_API_URL}feather${
-                publicationInfo.avatar
-              }`}
+              src={publicationInfo.avatar}
               className="h-12 w-12 ml-1 sm:h-14 sm:w-14 ring-4 ring-white sm:max-w-1/4"
             ></Avatar>
             {commentPost ? (

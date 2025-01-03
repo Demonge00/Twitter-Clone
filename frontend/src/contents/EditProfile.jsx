@@ -101,13 +101,7 @@ function EditProfile({ userInformationProp, setIsEditingUserProp }) {
         <div className=" w-full h-28 sm:h-40 sm:rounded-t-lg flex justify-center items-center z-20">
           <img
             className=" w-full h-40 absolute z-20 object-fit"
-            src={`${
-              bgImageUrl
-                ? bgImageUrl
-                : `${import.meta.env.VITE_API_URL}feather${
-                    updatedInfo.background_pic
-                  }`
-            }`}
+            src={`${bgImageUrl ? bgImageUrl : updatedInfo.background_pic}`}
           ></img>
           <label
             htmlFor="file-id"
@@ -137,13 +131,7 @@ function EditProfile({ userInformationProp, setIsEditingUserProp }) {
           ></input>
         </div>
         <Avatar
-          src={`${
-            profImageUrl
-              ? profImageUrl
-              : `${import.meta.env.VITE_API_URL}feather${
-                  updatedInfo.profile_pic
-                }`
-          }`}
+          src={`${profImageUrl ? profImageUrl : updatedInfo.profile_pic}`}
           className="h-14 w-14 mt-1 ml-3 relative -top-3 ring-4 ring-white sm:w-18 sm:h-18 sm:-top-8 sm:ml-5 z-30 lg:w-24 lg:h-24 lg:-top-14"
         ></Avatar>
         {/*Imagenes*/}

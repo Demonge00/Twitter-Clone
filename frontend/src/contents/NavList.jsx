@@ -34,9 +34,7 @@ function Display({ clicker }) {
       <div className=" h-screen w-[80vw] absolute bg-white z-50 top-0 left-[-80vw] animate-moveIn animate-fill-forwards overflow-y-auto overflow-x-hidden scrollbar-hide">
         <div className=" flex justify-between mt-4 ml-4 mr-4">
           <Avatar
-            src={`${import.meta.env.VITE_API_URL}feather${
-              userInfo.profile_pic
-            }`}
+            src={userInfo.profile_pic}
             className={`
       } h-10 w-10 `}
           />

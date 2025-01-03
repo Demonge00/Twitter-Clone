@@ -95,14 +95,13 @@ class PublicationInformationSerializer(serializers.ModelSerializer):
         time = timezone.now() - obj.creation_date
         if time.days > 7:
             return obj.creation_date.date()
-        elif time.days != 0:
+        if time.days != 0:
             return str(time.days) + "d"
-        elif time.seconds // 3600 != 0:
+        if time.seconds // 3600 != 0:
             return str(time.seconds // 3600) + "h"
-        elif time.seconds // 60 > 0:
+        if time.seconds // 60 > 0:
             return str(time.seconds // 60) + "m"
-        else:
-            return str(time.seconds) + "s"
+        return str(time.seconds) + "s"
 
     def get_exact_time(self, obj):
         if obj.creation_date.hour < 12:
@@ -137,7 +136,7 @@ class PublicationInformationSerializer(serializers.ModelSerializer):
 
     def get_avatar(self, obj):
         if obj.creator.profile_pic:
-            return obj.creator.profile_pic.url
+            return obj.creator.profile_pic
         return None
 
     def get_reetweet_from(self, obj):
@@ -176,5 +175,4 @@ class PublicationInformationSerializer(serializers.ModelSerializer):
                 representation["is_private"] = False
         else:
             representation["is_private"] = True
-
         return representation

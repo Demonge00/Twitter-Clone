@@ -85,9 +85,7 @@ function PostResponseProfile({ info }) {
         {/*TextArea*/}
         <div className="flex w-full">
           <Avatar
-            src={`${import.meta.env.VITE_API_URL}feather${
-              userInfo.profile_pic
-            }`}
+            src={userInfo.profile_pic}
             className="h-12 w-12 sm:h-14 sm:w-14 mt-1 ml-3 relative ring-4 ring-white sm:max-w-1/4"
           ></Avatar>
           <div className="flex flex-col w-3/4">

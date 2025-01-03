@@ -99,9 +99,7 @@ function PostPublication({ setIsPostingProp }) {
         {/*TextArea*/}
         <div className="flex w-full">
           <Avatar
-            src={`${import.meta.env.VITE_API_URL}feather${
-              userInfo.profile_pic
-            }`}
+            src={userInfo.profile_pic}
             className="h-14 w-14 sm:mt-1 ml-3 relative sm:top-3 ring-4 ring-white sm:max-w-1/4"
           ></Avatar>
           <div className="flex flex-col w-3/4">

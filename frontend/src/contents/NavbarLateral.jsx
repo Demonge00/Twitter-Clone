@@ -261,12 +261,7 @@ function NavbarLateral() {
           <Popover className="w-full h-full" placement="top-start">
             <PopoverTrigger className="w-full h-full">
               <div className="w-full h-full flex">
-                <Avatar
-                  src={`${import.meta.env.VITE_API_URL}feather${
-                    userInfo.profile_pic
-                  }`}
-                  className=" mb-6 mr-2"
-                />
+                <Avatar src={userInfo.profile_pic} className=" mb-6 mr-2" />
                 <div className="flex flex-col flex-grow -mt-1 text-gray-400">
                   <h1>{userInfo.name}</h1>
                   <h1>@{userInfo.name_tag}</h1>

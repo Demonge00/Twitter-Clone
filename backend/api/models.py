@@ -39,10 +39,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     name_tag = models.CharField(max_length=100, unique=True)
     email = models.EmailField(_("email address"), unique=True)
     location = models.CharField(max_length=100, null=True)
-    background_pic = models.ImageField(upload_to=get_path_for_bg, blank=True, null=True)
-    profile_pic = models.ImageField(
-        upload_to=get_path_for_profile, blank=True, null=True
-    )
+    # background_pic = models.ImageField(upload_to=get_path_for_bg, blank=True, null=True)
+    background_pic = models.URLField(blank=True, null=True)
+    profile_pic = models.URLField(blank=True, null=True)
     link = models.CharField(max_length=100, null=True)
     bio = models.TextField(null=True, max_length=200)
     follow = models.ManyToManyField(
