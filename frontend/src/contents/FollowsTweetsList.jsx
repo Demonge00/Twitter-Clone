@@ -42,7 +42,7 @@ function FollowsTweetsList() {
 
 function getListFollowQueryOptions(accessToken) {
   return {
-    queryKey: ["list-likes"],
+    queryKey: ["list-follows"],
     queryFn: () => GetListFollow(accessToken),
   };
 }

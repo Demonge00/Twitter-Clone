@@ -42,7 +42,7 @@ function ForYouAllTweetsList() {
 
 function getListForYouAllQueryOptions(accessToken) {
   return {
-    queryKey: ["list-likes"],
+    queryKey: ["list-for-you-all"],
     queryFn: () => GetListForYouAll(accessToken),
   };
 }

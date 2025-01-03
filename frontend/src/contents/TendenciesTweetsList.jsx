@@ -42,7 +42,7 @@ function TendenciesTweetsList() {
 
 function getListTendenciesQueryOptions(accessToken) {
   return {
-    queryKey: ["list-likes"],
+    queryKey: ["list-tendences"],
     queryFn: () => GetListTendences(accessToken),
   };
 }
