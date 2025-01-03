@@ -244,7 +244,7 @@ function Profile() {
         </div>
       </div>
       {/*Parte inferior paginado de tweets*/}
-      <div className="w-full h-full pb-14 sm:p-0" id="scroll-component">
+      <div className="w-full pb-14 sm:p-0" id="scroll-component">
         <Outlet />
       </div>
     </div>
