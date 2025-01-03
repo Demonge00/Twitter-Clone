@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from datetime import timedelta
 import os
-from pathlib import Path
 from urllib.parse import urlparse
 from dotenv import load_dotenv
 from django.conf import settings
@@ -46,7 +45,11 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-LOCAL_APPS = ["api.apps.ApiConfig"]
+LOCAL_APPS = [
+    "api.apps.ApiConfig",
+    "cloudinary",
+    "cloudinary_storage",
+]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
 
@@ -185,6 +188,14 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
+
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME", "tu-cloud-name"),
+    "API_KEY": os.getenv("CLOUDINARY_API_KEY", "tu-api-key"),
+    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET", "tu-api-secret"),
+}
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
