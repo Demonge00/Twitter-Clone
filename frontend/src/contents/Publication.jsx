@@ -156,9 +156,7 @@ function Publication({
               <div className="relative w-full h-full">
                 <img
                   className=" w-full min-h-40 relative z-20 object-fill block rounded-md"
-                  src={`${import.meta.env.VITE_API_URL}feather${
-                    publicationInfo.publication_pic
-                  }`}
+                  src={publicationInfo.publication_pic}
                 ></img>
               </div>
             ) : null}

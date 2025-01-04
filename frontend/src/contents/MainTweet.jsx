@@ -149,9 +149,7 @@ function MainTweet({
             <div className="relative h-full mx-3 ">
               <img
                 className=" min-h-40 relative z-20 object-fill block rounded-md mr-10"
-                src={`${import.meta.env.VITE_API_URL}feather${
-                  publicationInfo.publication_pic
-                }`}
+                src={publicationInfo.publication_pic}
               ></img>
             </div>
           ) : null}

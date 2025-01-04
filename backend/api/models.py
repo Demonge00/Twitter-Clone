@@ -107,9 +107,7 @@ class Publication(models.Model):
     commented_by = models.ManyToManyField(CustomUser, related_name="comments")
     is_private = models.BooleanField(default=False)
     views = models.IntegerField(default=0)
-    publication_pic = models.ImageField(
-        upload_to=get_path_for_pub, blank=True, null=True
-    )
+    publication_pic = models.URLField(blank=True, null=True)
 
     def likes(self):
         return self.likers.count()

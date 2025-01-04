@@ -156,10 +156,6 @@ class UserViewSet(viewsets.ModelViewSet):
         access_token = RefreshToken.for_user(self.request.user)
         access_token["name"] = user.name
         access_token["name_id"] = user.name_id
-        try:
-            print(access_token.name)
-        except Exception as e:
-            print(str(e))
         return Response(
             {"access": str(access_token.access_token), "refresh": str(access_token)},
             status=status.HTTP_200_OK,
@@ -246,14 +242,11 @@ class PostViewSet(viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
         response_of = None
         if "bg_image" in self.request.FILES:
             picture = self.request.FILES.get("bg_image")
-            file_name = picture.name
-            file_path = os.path.join(
-                settings.MEDIA_ROOT, "publication", creator.name_tag, file_name
-            )
-            if os.path.exists(file_path):
-                publication_pic = file_path
-            else:
-                publication_pic = picture
+            try:
+                upload_result = cloudinary.uploader.upload(picture)
+            except Exception as e:
+                return print(str(e))
+            publication_pic = upload_result["secure_url"]
         if "response_of" in self.request.POST:
             response_of = Publication.objects.get(
                 id=self.request.POST.get("response_of")
