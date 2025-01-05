@@ -7,6 +7,7 @@ class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(write_only=True, required=False)
     password = serializers.CharField(write_only=True, required=False)
     name_tag = serializers.CharField(required=False)
+    name = serializers.CharField(required=False)
 
     class Meta:
         model = CustomUser

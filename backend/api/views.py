@@ -96,13 +96,20 @@ class UserViewSet(viewsets.ModelViewSet):
     lookup_field = "name_tag"
 
     def get_serializer(self, *args, **kwargs):
-        if self.request.user.id:
-            user = User.objects.get(id=self.request.user.id)
-            kwargs["context"] = {"requester": user}
+        try:
+            if self.request.user.id:
+                user = User.objects.get(id=self.request.user.id)
+                kwargs["context"] = {"requester": user}
+        except Exception as e:
+            raise ValidationError({"error": str(e)})
         return super().get_serializer(*args, **kwargs)
 
     def get_object(self):
-        user = User.objects.get(name_tag=self.kwargs["name_tag"])
+        print(self.kwargs["name_tag"])
+        try:
+            user = User.objects.get(name_tag=self.kwargs["name_tag"])
+        except Exception as e:
+            raise ValidationError({"error": str(e)})
         return user
 
     def perform_create(self, serializer):
@@ -146,19 +153,28 @@ class UserViewSet(viewsets.ModelViewSet):
         return serializer.save(background_pic=background_pic, profile_pic=profile_pic)
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop("partial", False)
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        user = User.objects.get(id=self.request.user.id)
-        access_token = RefreshToken.for_user(self.request.user)
-        access_token["name"] = user.name
-        access_token["name_id"] = user.name_id
-        return Response(
-            {"access": str(access_token.access_token), "refresh": str(access_token)},
-            status=status.HTTP_200_OK,
-        )
+        try:
+            partial = kwargs.pop("partial", False)
+            instance = self.get_object()
+            serializer = self.get_serializer(
+                instance, data=request.data, partial=partial
+            )
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            user = User.objects.get(id=self.request.user.id)
+            access_token = RefreshToken.for_user(self.request.user)
+            access_token["name"] = user.name
+            access_token["name_id"] = user.name_tag
+            access_token["profile_pic"] = user.profile_pic
+            return Response(
+                {
+                    "access": str(access_token.access_token),
+                    "refresh": str(access_token),
+                },
+                status=status.HTTP_200_OK,
+            )
+        except Exception as e:
+            raise ValidationError({"error": str(e)})
 
     @action(detail=False, methods=["post"], permission_classes=[IsAuthenticated])
     def follow(self, request):
