@@ -109,18 +109,18 @@ class UserViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         verify_secret = get_random_string(length=32)
         number_id = get_random_string(length=6)
-        # send_mail(
-        #     f"Verifica tu cuenta de usuario para {
-        #         settings.WEB_SITE_NAME}",
-        #     f"Para verificar tu cuenta en {settings.WEB_SITE_NAME}, ve a {settings.VERIFICATION_URL}{verify_secret}",
-        #     settings.SENDER_EMAIL,
-        #     [self.request.data["email"]],
-        #     fail_silently=False,
-        #     html_message=f'Porfavor ve a <a href="{settings.VERIFICATION_URL}{verify_secret}">este email</a> para verificar tu cuenta.',
-        # )
-        print(
-            f'Porfavor ve a <a href="{settings.VERIFICATION_URL}{verify_secret}">este link</a> para verificar tu cuenta.'
-        )
+        try:
+            send_mail(
+                f"Verifica tu cuenta de usuario para {
+                settings.WEB_SITE_NAME}",
+                f"Para verificar tu cuenta en {settings.WEB_SITE_NAME}, ve a {settings.VERIFICATION_URL}{verify_secret}",
+                settings.SENDER_EMAIL,
+                [self.request.data["email"]],
+                fail_silently=False,
+                html_message=f'Porfavor ve a <a href="{settings.VERIFICATION_URL}{verify_secret}">este email</a> para verificar tu cuenta.',
+            )
+        except Exception as e:
+            raise ValidationError({"error": str(e)})
         return serializer.save(
             name_tag=self.request.data["name"] + number_id,
             verification_secret=verify_secret,

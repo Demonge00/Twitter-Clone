@@ -199,6 +199,15 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 
 WEB_SITE_NAME = os.getenv("DJANGO_WEB_SITE_NAME")
 VERIFICATION_URL = os.getenv("DJANGO_VERIFICATION_URL")
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"  # Cambia según tu proveedor (ej., smtp.mail.yahoo.com)
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = "DJANGO_SENDER_EMAIL"  # Tu dirección de correo
+EMAIL_HOST_PASSWORD = os.getenv(
+    "DJANGO_SENDER_PASSWORD"
+)  # Tu contraseña o App Password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SENDER_EMAIL = os.getenv("DJANGO_SENDER_EMAIL")
 
 # Static files (CSS, JavaScript, Images)
