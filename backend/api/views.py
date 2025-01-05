@@ -61,7 +61,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token["name"] = user.name
         token["name_tag"] = user.name_tag
         if user.profile_pic:
-            token["profile_pic"] = user.profile_pic.url
+            token["profile_pic"] = user.profile_pic
         else:
             token["profile_pic"] = None
         return token
@@ -69,7 +69,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     "Vista del serializer"
-
     serializer_class = MyTokenObtainPairSerializer
 
 
