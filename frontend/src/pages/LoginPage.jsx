@@ -50,7 +50,9 @@ function LoginPage() {
     >
       <form className=" min-w-[280px] sm:min-w-[382px] w-1/2 lg:w-1/3 min-h-60 border rounded flex flex-col gap-2 bg-gray-50 ">
         {isError ? (
-          <h1 className="text-center text-red-500 gap-2 pt-4 ">{error}</h1>
+          <h1 className="text-center text-red-500 gap-2 pt-4 bg-red-200 h-10 w-full">
+            {error}
+          </h1>
         ) : (
           <FontAwesomeIcon
             icon={faFeather}

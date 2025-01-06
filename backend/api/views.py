@@ -105,7 +105,6 @@ class UserViewSet(viewsets.ModelViewSet):
         return super().get_serializer(*args, **kwargs)
 
     def get_object(self):
-        print(self.kwargs["name_tag"])
         try:
             user = User.objects.get(name_tag=self.kwargs["name_tag"])
         except Exception as e:
@@ -164,7 +163,7 @@ class UserViewSet(viewsets.ModelViewSet):
             user = User.objects.get(id=self.request.user.id)
             access_token = RefreshToken.for_user(self.request.user)
             access_token["name"] = user.name
-            access_token["name_id"] = user.name_tag
+            access_token["name_tag"] = user.name_tag
             access_token["profile_pic"] = user.profile_pic
             return Response(
                 {

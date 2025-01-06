@@ -25,6 +25,7 @@ import {
 } from "../api/api";
 import PostResponse from "./PostResponse";
 import Publication from "./Publication";
+import { useQueryClient } from "@tanstack/react-query";
 function MainTweet({
   info,
   response_mod = true,
@@ -32,6 +33,9 @@ function MainTweet({
   showResponseOf = false,
 }) {
   const { userInfo } = useUserDetails();
+  const queryClient = useQueryClient();
+  const userCommonInfo = queryClient.getQueryData(["userCommonInfo"]);
+  console.log(userCommonInfo);
   const [publicationInfo, setPublicationInfo] = useState({ ...info });
   const [is_commenting, setIsCommenting] = useState(false);
   const [refresher, setRefresher] = useState(false);
@@ -107,7 +111,7 @@ function MainTweet({
       {location.pathname.match(/post/) && reetweet_from != null ? (
         <h1 className="text-sm flex gap-3 text-gray-500 mt-1 items-center">
           <FontAwesomeIcon icon={faRetweet} className={`h-4 pl-10`} />
-          {reetweet_from != userInfo.name
+          {reetweet_from != userCommonInfo.data.name
             ? `Retweeteado por ${reetweet_from}`
             : "Retweeteaste"}
         </h1>

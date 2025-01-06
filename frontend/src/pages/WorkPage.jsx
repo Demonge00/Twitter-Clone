@@ -11,7 +11,7 @@ import Profile from "./Profile";
 import { useEffect } from "react";
 import { useUserDetails } from "../contents/UserContext";
 import { OpacityContext } from "../contents/OpacityContext";
-import { Security, TryRefreshToken } from "../api/api";
+import { GetUserInfo, Security, TryRefreshToken } from "../api/api";
 import PublicationPage from "./PublicationPage";
 import ProfilePostsList from "../contents/ProfilePostsList";
 import ProfileResponsesList from "../contents/ProfileResponsesList";
@@ -21,10 +21,15 @@ import ForYouTweetsList from "../contents/ForYouTweetsList";
 import FollowsTweetsList from "../contents/FollowsTweetsList";
 import ForYouAllTweetsList from "../contents/ForYouAllTweetsList";
 import TendenciesTweetsList from "../contents/TendenciesTweetsList";
+import StillForWork from "../contents/StillForWork";
+import { useQuery } from "@tanstack/react-query";
 
 function WorkPage() {
   const location = useLocation();
   const { userInfo, updateUserInfo } = useUserDetails();
+  useQuery(
+    getUserPropertiesQueryOptions(userInfo.name_tag, userInfo.accessToken)
+  );
   useEffect(() => {
     Security(userInfo.accessToken).catch(() => {
       TryRefreshToken({ refresh: userInfo.refreshToken })
@@ -84,7 +89,7 @@ function WorkPage() {
               />
               <Route path="likes" element={<ProfileLikeList />} />
             </Route>
-            <Route path="settings"></Route>
+            <Route path="settings" element={<StillForWork />}></Route>
           </Routes>
         </div>
         <div className="flex flex-col border rounded-lg">
@@ -101,3 +106,12 @@ function WorkPage() {
 }
 
 export default WorkPage;
+
+function getUserPropertiesQueryOptions(userNameId, accessToken) {
+  return {
+    queryKey: ["userCommonInfo"],
+    queryFn: () => GetUserInfo({ url: userNameId, accessToken }),
+    select: (data) => data.data,
+    staleTime: 1000 * 60 * 20,
+  };
+}

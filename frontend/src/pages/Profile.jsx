@@ -14,6 +14,7 @@ import { Button } from "@nextui-org/react";
 import { useUserDetails } from "../contents/UserContext";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { GetUserInfo, ChangeFollow } from "../api/api";
+import { CircularProgress } from "@nextui-org/progress";
 import EditProfile from "../contents/EditProfile";
 
 function Profile() {
@@ -61,11 +62,10 @@ function Profile() {
       },
     }).then(() => {
       queryClient.setQueryData(["user", params.userNameId], (oldData) => {
-        console.log(oldData);
         return {
           data: {
-            ...oldData.data, // Asegúrate de respetar la estructura original
-            followed: !oldData.data.followed, // Modifica aquí los datos originales
+            ...oldData.data,
+            followed: !oldData.data.followed,
             followers: oldData.data.followed
               ? oldData.data.followers - 1
               : oldData.data.followers + 1,
@@ -75,10 +75,16 @@ function Profile() {
     });
   };
 
-  if (isLoading) return <div>Cargando...</div>;
+  if (isLoading)
+    return (
+      <div className=" flex items-center justify-center w-full h-full">
+        <CircularProgress aria-label="Loading..." size="lg" />
+        <h1 className=" text-center text-xl">Cargando</h1>
+      </div>
+    );
 
   return (
-    <div className=" w-full h-screen z-10 min-h-[300px] overflow-y-auto scrollbar-hide">
+    <div className=" w-full h-screen z-10 min-h-[300px] overflow-y-auto scrollbar-hide flex flex-col">
       {/*Editing User */}
       {isEditingUser ? (
         <EditProfile
@@ -238,7 +244,7 @@ function Profile() {
         </div>
       </div>
       {/*Parte inferior paginado de tweets*/}
-      <div className="w-full pb-14 sm:p-0" id="scroll-component">
+      <div className="w-full flex-grow pb-14 sm:p-0" id="scroll-component">
         <Outlet />
       </div>
     </div>
