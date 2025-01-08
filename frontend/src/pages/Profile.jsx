@@ -30,7 +30,11 @@ function Profile() {
     isError,
     isLoading,
   } = useQuery(
-    getUserInformationQueryOptions(params.userNameId, userInfo.accessToken)
+    getUserInformationQueryOptions(
+      params.userNameId,
+      userInfo.accessToken,
+      isEditingUser
+    )
   );
   //Scrolls
   useEffect(() => {
@@ -251,9 +255,13 @@ function Profile() {
   );
 }
 
-function getUserInformationQueryOptions(userNameId, accessToken) {
+function getUserInformationQueryOptions(
+  userNameId,
+  accessToken,
+  isEditingUser
+) {
   return {
-    queryKey: ["user", userNameId],
+    queryKey: ["user", userNameId, isEditingUser],
     queryFn: () => GetUserInfo({ url: userNameId, accessToken }),
     select: (data) => data.data,
   };
