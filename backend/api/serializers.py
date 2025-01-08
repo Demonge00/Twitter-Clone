@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from api.models import *
+import re
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -46,6 +47,13 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return user
+
+    def validate_name_tag(self, value):
+        if re.search("\W", value):
+            raise serializers.ValidationError(
+                "El nombre de usuario solo puede contener letras, números y guiones bajos."
+            )
+        return value
 
 
 class PublicationInformationSerializer(serializers.ModelSerializer):

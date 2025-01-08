@@ -1,6 +1,4 @@
 "Vistas de la API"
-
-import os
 from rest_framework.fields import ValidationError
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -19,20 +17,10 @@ from api.serializers import UserSerializer, PublicationInformationSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
-
-import cloudinary
-
+from api.services.publications import like_publication
 import cloudinary.uploader
 
-from api.services.publications import like_publication
-
 User = get_user_model()
-
-cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME", "tu-cloud-name"),
-    api_key=os.getenv("CLOUDINARY_API_KEY", "tu-api-key"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET", "tu-api-secret"),
-)
 
 
 class ReadOnlyorPost(BasePermission):
@@ -140,15 +128,22 @@ class UserViewSet(viewsets.ModelViewSet):
             try:
                 upload_result = cloudinary.uploader.upload(picture)
             except Exception as e:
-                return print(str(e))
+                return ValidationError({"error": str(e)})
             background_pic = upload_result["secure_url"]
         if "prof_image" in self.request.FILES:
             picture = self.request.FILES.get("prof_image")
             try:
                 upload_result = cloudinary.uploader.upload(picture)
+                print("asdas")
             except Exception as e:
-                return print(str(e))
+                return ValidationError({"error": str(e)})
             profile_pic = upload_result["secure_url"]
+        if not profile_pic and not background_pic:
+            return serializer.save()
+        if not profile_pic:
+            return serializer.save(background_pic=background_pic)
+        if not background_pic:
+            return serializer.save(profile_pic=profile_pic)
         return serializer.save(background_pic=background_pic, profile_pic=profile_pic)
 
     def update(self, request, *args, **kwargs):

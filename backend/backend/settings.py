@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from datetime import timedelta
 import os
-from pathlib import Path
 from urllib.parse import urlparse
 from dotenv import load_dotenv
 from django.conf import settings
@@ -33,6 +32,18 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+
+
+import cloudinary
+
+cloudinary.config(
+    cloud_name="dz2ybxyum",
+    api_key="214132743732354",
+    api_secret="dyNh-PVWpf6a5vhK13Uc2xoLE8k",
+    api_proxy="http://proxy.server:3128",
+)
+
+import cloudinary.uploader
 
 
 # Application definition
@@ -192,12 +203,6 @@ SIMPLE_JWT = {
     "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
-}
-
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME", "tu-cloud-name"),
-    "API_KEY": os.getenv("CLOUDINARY_API_KEY", "tu-api-key"),
-    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET", "tu-api-secret"),
 }
 
 
